@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="540" viewBox="0 0 860 540" font-family="'Yu Gothic','Meiryo',sans-serif">
+  <rect width="860" height="540" fill="#f5f5f5"/>
+  <!-- title bar -->
+  <rect x="0" y="0" width="860" height="48" fill="#ffffff"/>
+  <rect x="0" y="45" width="860" height="3" fill="#02C39A"/>
+  <text x="20" y="32" font-size="20" font-weight="bold" fill="#028090">🎵 オーバーレイ設定ツール</text>
+  <text x="320" y="32" font-size="14" fill="#888">ルーム: alice</text>
+
+  <!-- LEFT PANEL -->
+  <!-- 設定管理 -->
+  <rect x="14" y="62" width="396" height="86" rx="8" fill="#ffffff" stroke="#e6e6e6"/>
+  <text x="30" y="86" font-size="15" font-weight="bold" fill="#028090">💾 設定管理（プリセット）</text>
+  <rect x="30" y="98" width="364" height="34" rx="5" fill="#fafafa" stroke="#cccccc"/>
+  <text x="44" y="120" font-size="13" fill="#333">標準5件表示　▼</text>
+
+  <!-- 表示エリア設定 -->
+  <rect x="14" y="158" width="396" height="96" rx="8" fill="#ffffff" stroke="#e6e6e6"/>
+  <text x="30" y="182" font-size="15" font-weight="bold" fill="#028090">📐 表示エリア設定</text>
+  <text x="30" y="208" font-size="13" fill="#555">表示件数上限</text>
+  <rect x="150" y="200" width="200" height="6" rx="3" fill="#cfe9ec"/>
+  <circle cx="270" cy="203" r="9" fill="#028090"/>
+  <text x="360" y="208" font-size="13" fill="#333">5件</text>
+  <text x="30" y="236" font-size="13" fill="#555">幅 / 高さ / 余白</text>
+  <rect x="150" y="226" width="200" height="6" rx="3" fill="#cfe9ec"/>
+  <circle cx="210" cy="229" r="9" fill="#028090"/>
+
+  <!-- カスタマイズ -->
+  <rect x="14" y="264" width="396" height="200" rx="8" fill="#ffffff" stroke="#e6e6e6"/>
+  <text x="30" y="288" font-size="15" font-weight="bold" fill="#028090">🎨 カスタマイズ</text>
+  <text x="30" y="312" font-size="13" fill="#555">背景色</text>
+  <rect x="150" y="301" width="40" height="18" rx="3" fill="#028090" stroke="#bbb"/>
+  <text x="210" y="312" font-size="13" fill="#555">文字色</text>
+  <rect x="280" y="301" width="40" height="18" rx="3" fill="#ffffff" stroke="#bbb"/>
+  <text x="30" y="340" font-size="13" fill="#555">文字サイズ</text>
+  <rect x="150" y="332" width="200" height="6" rx="3" fill="#cfe9ec"/>
+  <circle cx="250" cy="335" r="9" fill="#028090"/>
+  <text x="30" y="368" font-size="13" fill="#555">アニメーション</text>
+  <rect x="150" y="356" width="200" height="30" rx="5" fill="#fafafa" stroke="#cccccc"/>
+  <text x="162" y="376" font-size="12" fill="#333">スライドイン(左から) ←　▼</text>
+  <text x="30" y="406" font-size="13" fill="#555">☑ 投稿者名を表示　 ☑ 時刻を表示</text>
+  <!-- buttons -->
+  <rect x="30" y="420" width="150" height="32" rx="5" fill="#028090"/>
+  <text x="105" y="441" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">プレビューを更新</text>
+  <rect x="190" y="420" width="150" height="32" rx="5" fill="#02C39A"/>
+  <text x="265" y="441" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">📋 URLをコピー</text>
+
+  <!-- callout under URL copy -->
+  <rect x="14" y="474" width="396" height="52" rx="8" fill="#fff8e1" stroke="#ffc107"/>
+  <text x="28" y="496" font-size="12" fill="#7a5b00">見た目を変えたら、この「URLをコピー」のURLを</text>
+  <text x="28" y="514" font-size="12" fill="#7a5b00">OBSに貼ります（設定が全部入っています）。</text>
+
+  <!-- RIGHT PANEL: preview -->
+  <rect x="424" y="62" width="422" height="464" rx="8" fill="#ffffff" stroke="#e6e6e6"/>
+  <text x="440" y="86" font-size="15" font-weight="bold" fill="#028090">👁️ プレビュー（その場で確認）</text>
+  <rect x="440" y="98" width="390" height="412" rx="8" fill="#0c1330"/>
+  <text x="635" y="132" text-anchor="middle" font-size="18" font-weight="bold" fill="#02C39A">🎵 リクエスト一覧</text>
+  <g>
+    <rect x="470" y="150" width="330" height="62" rx="10" fill="#27326b"/>
+    <rect x="470" y="150" width="5" height="62" fill="#02C39A"/>
+    <text x="488" y="178" font-size="16" font-weight="bold" fill="#ffffff">🎵 ヨルシカ - 花に亡霊</text>
+    <text x="488" y="198" font-size="12" fill="#9fb0e0">@viewer_a　19:24</text>
+  </g>
+  <g>
+    <rect x="470" y="222" width="330" height="62" rx="10" fill="#27326b"/>
+    <rect x="470" y="222" width="5" height="62" fill="#02C39A"/>
+    <text x="488" y="250" font-size="16" font-weight="bold" fill="#ffffff">🎵 YOASOBI - 夜に駆ける</text>
+    <text x="488" y="270" font-size="12" fill="#9fb0e0">@viewer_b　19:25</text>
+  </g>
+  <g>
+    <rect x="470" y="294" width="330" height="62" rx="10" fill="#27326b"/>
+    <rect x="470" y="294" width="5" height="62" fill="#02C39A"/>
+    <text x="488" y="322" font-size="16" font-weight="bold" fill="#ffffff">🎵 Ado - うっせぇわ</text>
+    <text x="488" y="342" font-size="12" fill="#9fb0e0">@viewer_c　19:26</text>
+  </g>
+  <text x="635" y="396" text-anchor="middle" font-size="12" fill="#8c9ac9">↑ 左で設定を変えると、ここに即反映されます</text>
+</svg>
