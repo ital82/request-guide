@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="260" viewBox="0 0 760 260" font-family="'Yu Gothic','Meiryo',sans-serif">
+  <rect width="760" height="260" fill="#f0f2f5"/>
+  <!-- リンク card -->
+  <rect x="30" y="30" width="700" height="120" rx="10" fill="#ffffff" stroke="#e0e0e0"/>
+  <text x="55" y="66" font-size="18" font-weight="bold" fill="#333">🔗 リンク</text>
+  <rect x="55" y="84" width="300" height="44" rx="6" fill="#17a2b8"/>
+  <text x="205" y="112" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">📋 オーバーレイURLをコピー</text>
+  <rect x="370" y="84" width="290" height="44" rx="6" fill="#6c757d"/>
+  <text x="515" y="112" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">⚙ オーバーレイ設定ツール</text>
+
+  <!-- callouts -->
+  <text x="55" y="185" font-size="14" fill="#028090">「📋 オーバーレイURLをコピー」を押すと、OBSに貼るURLがコピーされます。</text>
+  <text x="55" y="212" font-size="13" fill="#777">（色や文字サイズを変えたいときだけ「⚙ オーバーレイ設定ツール」を使います。普段は不要）</text>
+  <rect x="55" y="228" width="630" height="22" rx="4" fill="#eef7f8"/>
+  <text x="65" y="244" font-size="12" fill="#1c6b75">コピーされるURL例：  https://（サーバーURL）/overlay/alice</text>
+</svg>

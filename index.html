@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>配信者向け かんたん操作ガイド｜リクエスト管理システム</title>
+<meta name="description" content="YouTubeライブのコメントから曲リクエストを集めて配信画面に表示するツールの、配信者向け操作ガイドです。">
+<style>
+  :root { --teal:#028090; --green:#02C39A; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Yu Gothic','Meiryo',sans-serif;
+    margin: 0; background: #f0f2f5; color: #2b2b2b; line-height: 1.8;
+  }
+  header.site {
+    background: var(--teal); color: #fff; padding: 28px 20px; text-align: center;
+  }
+  header.site h1 { margin: 0; font-size: 24px; }
+  header.site p { margin: 8px 0 0; font-size: 14px; opacity: .9; }
+  main { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; }
+  h2 {
+    font-size: 20px; color: var(--teal); margin: 40px 0 12px;
+    border-left: 6px solid var(--teal); padding-left: 12px;
+  }
+  figure { margin: 16px 0; text-align: center; }
+  figure img {
+    width: 100%; height: auto; max-width: 820px;
+    border: 1px solid #e0e0e0; border-radius: 10px; background: #fff;
+  }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; background: #fff; }
+  th, td { border: 1px solid #e0e0e0; padding: 10px 12px; text-align: left; font-size: 15px; }
+  th { background: #eef7f8; }
+  code {
+    background: #eef1f3; padding: 2px 6px; border-radius: 4px;
+    font-family: Consolas,'Courier New',monospace; font-size: 14px;
+  }
+  blockquote {
+    margin: 16px 0; padding: 12px 16px; background: #fff8e1;
+    border-left: 5px solid #ffc107; border-radius: 4px; font-size: 15px;
+  }
+  .note { background: #eef7f8; border-left-color: var(--teal); }
+  hr { border: none; border-top: 1px solid #e0e0e0; margin: 32px 0; }
+  footer { text-align: center; padding: 24px; color: #999; font-size: 13px; }
+</style>
+</head>
+<body>
+<header class="site">
+  <h1>🎵 配信者向け かんたん操作ガイド</h1>
+  <p>YouTubeライブのコメントから曲リクエストを集めて、配信画面に表示する</p>
+</header>
+
+<main>
+  <p>むずかしい設定は管理者が済ませてあります。あなたは下の手順どおりに進めるだけでOKです。</p>
+
+  <h2>全体の流れ</h2>
+  <figure><img src="images/00-flow.svg" alt="全体の流れ"></figure>
+  <blockquote>
+    <strong>サーバーの起動は管理者が行います。</strong> あなたは「管理者から渡されたURL」を開くところから始めてください。
+    もしURLを開いて「サーバーは停止中です」と出る場合は、管理者に起動を依頼してください。
+  </blockquote>
+
+  <h2>事前に管理者から受け取るもの</h2>
+  <table>
+    <tr><th>受け取るもの</th><th>例</th></tr>
+    <tr><td>あなた専用のページURL</td><td><code>https://（サーバー名）/admin/alice</code></td></tr>
+    <tr><td>ルームのパスワード</td><td>（あなただけの合言葉）</td></tr>
+  </table>
+  <p>「alice」の部分があなたの<strong>ルーム名</strong>です（人によって違います）。</p>
+
+  <h2>ステップ1：ログイン</h2>
+  <p>受け取ったURLをブラウザで開き、<strong>パスワード</strong>を入れて「ログイン」を押します。</p>
+  <figure><img src="images/01-login.svg" alt="ログイン画面"></figure>
+  <ul>
+    <li>ログインに成功すると、右上が「✅ 認証済み」になります。</li>
+    <li>一度ログインすれば、同じ端末では次回から自動でログイン状態になります。</li>
+  </ul>
+
+  <h2>ステップ2：YouTube配信を「開始」する</h2>
+  <p>「📺 YouTube監視」の入力欄に、<strong>配信中のYouTubeライブのURL</strong>（または動画ID）を貼り、「▶ 開始」を押します。</p>
+  <figure><img src="images/02-start.svg" alt="監視の開始とプレフィックス設定"></figure>
+  <ul>
+    <li>バーが赤い「停止中」から<strong>緑の「監視中」</strong>に変われば成功です。</li>
+    <li>配信が始まっていない（待機中の）URLでは開始できないことがあります。配信を始めてから押してください。</li>
+  </ul>
+
+  <h2>ステップ3：合言葉（プレフィックス）を決める</h2>
+  <p>「⚙ 設定」で、視聴者がリクエストするときに<strong>先頭につける合言葉</strong>を決めて「保存」します（上の画像の下半分）。</p>
+  <ul>
+    <li>例：合言葉を <code>#req</code> にした場合、視聴者は <code>#req ヨルシカ - 花に亡霊</code> のようにコメントすると、その曲がリクエストとして追加されます。</li>
+    <li>合言葉が付いていないコメントは無視されます（普通の雑談はリクエストになりません）。</li>
+  </ul>
+
+  <h2>ステップ4：表示用URLをコピーする</h2>
+  <p>「🔗 リンク」の「📋 オーバーレイURLをコピー」を押します。OBSに貼るURLがコピーされます。</p>
+  <figure><img src="images/03-link.svg" alt="リンク（URLコピー）"></figure>
+  <blockquote class="note">色や文字サイズを変えたいときだけ「⚙ オーバーレイ設定ツール」を使います。最初はそのままでOKです。</blockquote>
+
+  <h2>ステップ5：OBSに表示を追加する</h2>
+  <p>OBSで「ソース」→「＋」→「<strong>ブラウザ</strong>」を選び、コピーしたURLを貼り付けます。</p>
+  <figure><img src="images/04-obs.svg" alt="OBSブラウザソース追加"></figure>
+  <table>
+    <tr><th>項目</th><th>設定</th></tr>
+    <tr><td>URL</td><td>ステップ4でコピーしたURL</td></tr>
+    <tr><td>幅</td><td>1920</td></tr>
+    <tr><td>高さ</td><td>1080</td></tr>
+  </table>
+  <p>「OK」を押すと、配信画面にリクエスト一覧が出ます。位置や大きさはOBS上でドラッグして調整してください。</p>
+
+  <h2>できあがり：視聴者がリクエストすると自動表示</h2>
+  <p>視聴者がYouTubeチャットに「<strong>合言葉＋曲名</strong>」を打つと、配信画面の一覧に自動で追加されます。</p>
+  <figure><img src="images/05-overlay.svg" alt="配信画面イメージ"></figure>
+  <ul>
+    <li>一覧は<strong>古い順（待ち行列）</strong>に並びます。新しいリクエストが来ても、表示中のものが消えることはありません。</li>
+  </ul>
+
+  <h2>配信中の操作</h2>
+  <p>ログインしたページ（<code>/admin/alice</code>）でできること：</p>
+  <ul>
+    <li><strong>🎵 リクエスト一覧</strong>：歌い終わった曲は「✕（削除）」で消すと、次の曲が繰り上がります。</li>
+    <li><strong>🗑 全クリア</strong>：一覧をまとめて空にします。</li>
+    <li><strong>🧪 テスト追加</strong>：表示確認用に、ダミーのリクエストを1件追加します。</li>
+  </ul>
+  <blockquote>
+    <strong>配信中は、このページのタブを開いたままにしておいてください。</strong>
+    開いている間は自動でサーバーのスリープを防ぎます（右上に「💤 スリープ防止: 起動中」と表示）。
+  </blockquote>
+
+  <h2>配信が終わったら</h2>
+  <ul>
+    <li>特別な操作は不要です。次回また同じURLを開いて使えます。</li>
+    <li>別の配信を始めるときは、ステップ2で新しい配信URLを入れて「▶ 開始」し直してください。</li>
+  </ul>
+
+  <h2>困ったとき</h2>
+  <table>
+    <tr><th>症状</th><th>対処</th></tr>
+    <tr><td>ページを開くと「サーバーは停止中」</td><td>管理者にサーバーの起動を依頼してください。</td></tr>
+    <tr><td>リクエストが一覧に出ない</td><td>①「監視中」になっているか ②視聴者の合言葉が設定と一致しているか を確認。</td></tr>
+    <tr><td>配信画面の表示が古い／反映されない</td><td>OBSでソースを右クリック →「現在のページのキャッシュを更新」。</td></tr>
+    <tr><td>配信中に急に止まった気がする</td><td>ページの「📋 サーバーログ」を開いて「🔄 ログを更新」。状況がわからなければ画面のログを管理者に共有してください。</td></tr>
+  </table>
+
+  <hr>
+  <p>それでも解決しないときは、管理者に連絡してください。</p>
+</main>
+
+<footer>リクエスト管理システム — 配信者向けガイド</footer>
+</body>
+</html>

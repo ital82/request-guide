@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="380" viewBox="0 0 760 380" font-family="'Yu Gothic','Meiryo',sans-serif">
+  <!-- 配信画面イメージ -->
+  <defs>
+    <linearGradient id="scene" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a4a6b"/>
+      <stop offset="1" stop-color="#1f2a44"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2f3c7e"/>
+      <stop offset="1" stop-color="#27326b"/>
+    </linearGradient>
+  </defs>
+  <rect width="760" height="380" fill="url(#scene)"/>
+  <text x="30" y="34" font-size="14" fill="#b9c3da">配信画面（OBS）— リクエストが自動で表示されます</text>
+
+  <!-- overlay box -->
+  <rect x="430" y="70" width="300" height="280" rx="12" fill="#000000" opacity="0.35"/>
+  <text x="580" y="108" text-anchor="middle" font-size="20" font-weight="bold" fill="#02C39A">👑 リクエスト一覧</text>
+
+  <g>
+    <rect x="450" y="125" width="260" height="58" rx="10" fill="url(#card)"/>
+    <rect x="450" y="125" width="5" height="58" fill="#02C39A"/>
+    <text x="466" y="146" font-size="12" fill="#9fb0e0">#1</text>
+    <text x="466" y="167" font-size="15" font-weight="bold" fill="#ffffff">👑 ヨルシカ - 花に亡霊</text>
+    <text x="466" y="180" font-size="11" fill="#9fb0e0">@viewer_a</text>
+  </g>
+  <g>
+    <rect x="450" y="193" width="260" height="58" rx="10" fill="url(#card)"/>
+    <rect x="450" y="193" width="5" height="58" fill="#02C39A"/>
+    <text x="466" y="214" font-size="12" fill="#9fb0e0">#2</text>
+    <text x="466" y="235" font-size="15" font-weight="bold" fill="#ffffff">👑 YOASOBI - 夜に駆ける</text>
+    <text x="466" y="248" font-size="11" fill="#9fb0e0">@viewer_b</text>
+  </g>
+  <g>
+    <rect x="450" y="261" width="260" height="58" rx="10" fill="url(#card)"/>
+    <rect x="450" y="261" width="5" height="58" fill="#02C39A"/>
+    <text x="466" y="282" font-size="12" fill="#9fb0e0">#3</text>
+    <text x="466" y="303" font-size="15" font-weight="bold" fill="#ffffff">👑 Ado - うっせぇわ</text>
+    <text x="466" y="316" font-size="11" fill="#9fb0e0">@viewer_c</text>
+  </g>
+
+  <!-- chat bubble -->
+  <rect x="30" y="150" width="340" height="70" rx="10" fill="#ffffff" opacity="0.92"/>
+  <text x="48" y="180" font-size="14" fill="#333">視聴者がYouTubeチャットに：</text>
+  <text x="48" y="204" font-size="15" font-weight="bold" fill="#028090">#req ヨルシカ - 花に亡霊</text>
+  <text x="200" y="255" text-anchor="middle" font-size="13" fill="#dfe6f5">↓ 合言葉付きの投稿だけが一覧に追加されます</text>
+</svg>
