@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>配信者向け かんたん操作ガイド｜リクエスト管理システム</title>
-<meta name="description" content="YouTubeライブのコメントから曲リクエストを集めて配信画面に表示するツールの、配信者向け操作ガイドです。">
+<meta name="description" content="YouTubeライブのコメントから曲リクエストを集めて配信画面に表示するツールの、配信者向け操作ガイドです。準備は最初の1回だけ、毎回やるのは「開始」だけ。">
 <style>
   :root { --teal:#028090; --green:#02C39A; }
   * { box-sizing: border-box; }
@@ -19,12 +19,26 @@
   header.site p { margin: 8px 0 0; font-size: 14px; opacity: .9; }
   main { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; }
   h2 {
-    font-size: 20px; color: var(--teal); margin: 40px 0 12px;
+    font-size: 20px; color: var(--teal); margin: 36px 0 12px;
     border-left: 6px solid var(--teal); padding-left: 12px;
   }
+  h3 { font-size: 17px; margin: 22px 0 8px; color: #333; }
+  /* フェーズ見出し（初回/毎回） */
+  .phase {
+    margin: 44px 0 8px; padding: 14px 18px; border-radius: 10px;
+    color: #fff; font-size: 21px; font-weight: bold;
+  }
+  .phase small { display:block; font-size: 13px; font-weight: normal; opacity: .92; margin-top: 4px; }
+  .phase.setup { background: var(--teal); }
+  .phase.repeat { background: var(--green); }
+  .keybox {
+    margin: 20px 0; padding: 18px 20px; background: #e6fbf4;
+    border: 2px solid var(--green); border-radius: 12px;
+  }
+  .keybox b { font-size: 18px; color: #019c7b; }
   figure { margin: 16px 0; text-align: center; }
   figure img {
-    width: 100%; height: auto; max-width: 820px;
+    width: 100%; height: auto; max-width: 860px;
     border: 1px solid #e0e0e0; border-radius: 10px; background: #fff;
   }
   table { border-collapse: collapse; width: 100%; margin: 12px 0; background: #fff; }
@@ -38,7 +52,7 @@
     margin: 16px 0; padding: 12px 16px; background: #fff8e1;
     border-left: 5px solid #ffc107; border-radius: 4px; font-size: 15px;
   }
-  .note { background: #eef7f8; border-left-color: var(--teal); }
+  blockquote.note { background: #eef7f8; border-left-color: var(--teal); }
   hr { border: none; border-top: 1px solid #e0e0e0; margin: 32px 0; }
   footer { text-align: center; padding: 24px; color: #999; font-size: 13px; }
 </style>
@@ -50,10 +64,15 @@
 </header>
 
 <main>
-  <p>むずかしい設定は管理者が済ませてあります。あなたは下の手順どおりに進めるだけでOKです。</p>
+  <p>むずかしい設定は管理者が済ませてあります。</p>
+
+  <div class="keybox">
+    🟢 <b>いちばん大事なこと：毎回やるのは「▶ 開始」を押すだけです。</b><br>
+    ログインやOBSの設定は<strong>最初の1回だけ</strong>。次回からはそのまま使い回せます。「全部やり直し」ではありません。
+  </div>
 
   <h2>全体の流れ</h2>
-  <figure><img src="images/00-flow.svg" alt="全体の流れ"></figure>
+  <figure><img src="images/00-flow.svg" alt="全体の流れ：初回だけの準備と、毎回やること"></figure>
   <blockquote>
     <strong>サーバーの起動は管理者が行います。</strong> あなたは「管理者から渡されたURL」を開くところから始めてください。
     もしURLを開いて「サーバーは停止中です」と出る場合は、管理者に起動を依頼してください。
@@ -67,93 +86,77 @@
   </table>
   <p>「alice」の部分があなたの<strong>ルーム名</strong>です（人によって違います）。</p>
 
-  <h2>ステップ1：ログイン</h2>
+  <!-- ===== 初回だけ ===== -->
+  <div class="phase setup">🔧 【初回だけ】最初の準備<small>1回やれば、次回から使い回せます。「全部やり直し」ではありません。</small></div>
+
+  <h3>A. ログインする（次回から自動）</h3>
   <p>受け取ったURLをブラウザで開き、<strong>パスワード</strong>を入れて「ログイン」を押します。</p>
   <figure><img src="images/01-login.svg" alt="ログイン画面"></figure>
   <ul>
-    <li>ログインに成功すると、右上が「✅ 認証済み」になります。</li>
-    <li>一度ログインすれば、同じ端末では次回から自動でログイン状態になります。</li>
+    <li>右上が「✅ 認証済み」になればOK。</li>
+    <li><strong>同じ端末・同じブラウザなら、次回からは自動でログイン状態</strong>になります。</li>
+    <li>ページはブックマークしておくと便利です。</li>
   </ul>
 
-  <h2>ステップ2：YouTube配信を「開始」する</h2>
-  <p>「📺 YouTube監視」の入力欄に、<strong>配信中のYouTubeライブのURL</strong>（または動画ID）を貼り、「▶ 開始」を押します。</p>
-  <figure><img src="images/02-start.svg" alt="監視の開始とプレフィックス設定"></figure>
+  <h3>B. 合言葉（プレフィックス）を決める</h3>
+  <p>「⚙ 設定」で、視聴者がリクエストに<strong>先頭につける合言葉</strong>を決めて「保存」します（次の『毎回やること』の画像の下半分にも写っています）。</p>
   <ul>
-    <li>バーが赤い「停止中」から<strong>緑の「監視中」</strong>に変われば成功です。</li>
-    <li>配信が始まっていない（待機中の）URLでは開始できないことがあります。配信を始めてから押してください。</li>
-  </ul>
-
-  <h2>ステップ3：合言葉（プレフィックス）を決める</h2>
-  <p>「⚙ 設定」で、視聴者がリクエストするときに<strong>先頭につける合言葉</strong>を決めて「保存」します（上の画像の下半分）。</p>
-  <ul>
-    <li>例：合言葉を <code>#req</code> にした場合、視聴者は <code>#req ヨルシカ - 花に亡霊</code> のようにコメントすると、その曲がリクエストとして追加されます。</li>
+    <li>例：合言葉を <code>#req</code> にすると、視聴者は <code>#req ヨルシカ - 花に亡霊</code> のようにコメントすればリクエストになります。</li>
     <li>合言葉が付いていないコメントは無視されます（普通の雑談はリクエストになりません）。</li>
+    <li><strong>一度保存すれば設定は残ります。</strong> 毎回決め直す必要はありません。</li>
   </ul>
 
-  <h2>ステップ4：表示用URLをコピーする</h2>
-  <p>「🔗 リンク」の「📋 オーバーレイURLをコピー」を押します。OBSに貼るURLがコピーされます。</p>
+  <h3>C. OBSに表示を一度だけ登録する</h3>
+  <p><strong>C-1. 表示用URLをコピー</strong> ―「🔗 リンク」の「📋 オーバーレイURLをコピー」を押します。</p>
   <figure><img src="images/03-link.svg" alt="リンク（URLコピー）"></figure>
-  <blockquote class="note">そのままの見た目でよければ、これでOKです。色や文字サイズ・表示件数などを変えたいときは、次の「ステップ4.5」を読んでください（あとからでも変更できます）。</blockquote>
-
-  <h2>ステップ4.5（任意）：オーバーレイの見た目を変える — オーバーレイ設定ツール</h2>
-  <p>色・文字サイズ・表示件数・出現アニメーションなどを自分好みにしたいときは、「🔗 リンク」の「<strong>⚙ オーバーレイ設定ツール</strong>」を開きます。<strong>変えなくても使えます</strong>ので、こだわりたい人だけでOKです。</p>
-  <figure><img src="images/06-overlay-tool.svg" alt="オーバーレイ設定ツール"></figure>
-  <p><strong>画面の見方</strong></p>
-  <ul>
-    <li><strong>左：設定パネル ／ 右：プレビュー</strong>。左で変更すると、右にすぐ反映されて見た目を確認できます。</li>
-    <li><strong>💾 設定管理（プリセット）</strong>：まずはここから『コンパクト2件表示』『標準5件表示』などを選ぶだけでも、きれいに整います。</li>
-    <li><strong>📐 表示エリア設定</strong>：画面に出す<strong>件数の上限</strong>、表示エリアの幅・高さ・余白。</li>
-    <li><strong>🎨 カスタマイズ</strong>：背景や文字の<strong>色・透明度</strong>、<strong>文字サイズ</strong>、<strong>出現アニメーション</strong>、投稿者名／時刻の表示ON/OFF。</li>
-    <li>上部の「テスト用」ボタンでダミーのリクエストを足すと、見た目を確認しやすくなります。</li>
-  </ul>
-  <p><strong>決めたあとの手順（重要）</strong></p>
-  <ol>
-    <li>「<strong>プレビューを更新</strong>」で見た目を確認する</li>
-    <li>「<strong>📋 URLをコピー</strong>」を押す ← このURLに、変更した見た目の設定がすべて入っています</li>
-    <li>そのURLを<strong>ステップ5でOBSに貼ります</strong></li>
-  </ol>
-  <blockquote>⚠️ 見た目をカスタムしたときは、ステップ4の「📋 オーバーレイURLをコピー」ではなく、<strong>この設定ツールの「📋 URLをコピー」で出たURL</strong>をOBSに使ってください（そうしないと変更が反映されません）。</blockquote>
-  <p><strong>便利な使い方</strong></p>
-  <ul>
-    <li>「<strong>現在の設定を保存</strong>」で名前を付けて保存すると、次回「保存した設定」から呼び出せます（この設定はお使いのブラウザに保存され、すべてのルームで共通です）。</li>
-    <li>配信画面に自然に重ねるなら、「全体背景の透明度」は <strong>0（背景なし）</strong> が基本です。</li>
-    <li>後から見た目を変えてOBSのURLを差し替えたら、<strong>OBSでキャッシュ更新</strong>を忘れずに（ソースを右クリック →「現在のページのキャッシュを更新」）。</li>
-  </ul>
-
-  <h2>ステップ5：OBSに表示を追加する</h2>
-  <p>OBSで「ソース」→「＋」→「<strong>ブラウザ</strong>」を選び、コピーしたURLを貼り付けます。</p>
+  <p><strong>C-2. OBSにブラウザソースとして追加</strong> ― OBSで「ソース」→「＋」→「ブラウザ」を選び、コピーしたURLを貼り付けます。</p>
   <figure><img src="images/04-obs.svg" alt="OBSブラウザソース追加"></figure>
   <table>
     <tr><th>項目</th><th>設定</th></tr>
-    <tr><td>URL</td><td>ステップ4でコピーしたURL（見た目を変えた人はステップ4.5でコピーしたURL）</td></tr>
+    <tr><td>URL</td><td>C-1でコピーしたURL（見た目を変えた人は下の「任意」でコピーしたURL）</td></tr>
     <tr><td>幅</td><td>1920</td></tr>
     <tr><td>高さ</td><td>1080</td></tr>
   </table>
-  <p>「OK」を押すと、配信画面にリクエスト一覧が出ます。位置や大きさはOBS上でドラッグして調整してください。</p>
+  <p><strong>一度OBSに登録すれば、その設定はOBSに保存されます。</strong> 次回の配信で貼り直す必要はありません。</p>
 
-  <h2>できあがり：視聴者がリクエストすると自動表示</h2>
-  <p>視聴者がYouTubeチャットに「<strong>合言葉＋曲名</strong>」を打つと、配信画面の一覧に自動で追加されます。</p>
+  <h3>（任意）見た目を変えたいとき — オーバーレイ設定ツール</h3>
+  <p>色・文字サイズ・表示件数・出現アニメーションなどを自分好みにしたいときだけ使います。<strong>変えなくても使えます。</strong></p>
+  <figure><img src="images/06-overlay-tool.svg" alt="オーバーレイ設定ツール"></figure>
+  <ul>
+    <li><strong>左：設定パネル ／ 右：プレビュー</strong>。左を変えると右にすぐ反映されます。</li>
+    <li><strong>💾 設定管理（プリセット）</strong>：『コンパクト2件表示』『標準5件表示』などを選ぶだけでも整います。</li>
+    <li><strong>📐 表示エリア設定</strong>：表示<strong>件数の上限</strong>、幅・高さ・余白。</li>
+    <li><strong>🎨 カスタマイズ</strong>：色・透明度、文字サイズ、出現アニメーション、投稿者名／時刻の表示ON/OFF。</li>
+  </ul>
+  <p>決めたら「<strong>📋 URLをコピー</strong>」を押し、そのURLを <strong>C-2 でOBSに貼ります</strong>。</p>
+  <blockquote>⚠️ 見た目をカスタムしたときは、C-1の「📋 オーバーレイURLをコピー」ではなく、<strong>設定ツールの「📋 URLをコピー」のURL</strong>をOBSに使ってください。<br>💡「現在の設定を保存」で名前を付けて保存でき、次回呼び出せます（このブラウザに保存・全ルーム共通）。配信に重ねるなら「全体背景の透明度」は <strong>0</strong> が基本です。</blockquote>
+
+  <!-- ===== 毎回 ===== -->
+  <div class="phase repeat">🔁 【毎回】配信のたびにやること<small>準備が済んでいれば、毎回やるのはこれだけ。</small></div>
+
+  <h3>1. 管理ページを開いて「▶ 開始」を押す</h3>
+  <p>ページを開き（自動ログイン）、「📺 YouTube監視」に<strong>その日の配信のYouTubeライブURL</strong>を貼って「<strong>▶ 開始</strong>」。</p>
+  <figure><img src="images/02-start.svg" alt="監視の開始（毎回やること）"></figure>
+  <ul>
+    <li>バーが赤い「停止中」から<strong>緑の「監視中」</strong>に変わればOK。</li>
+    <li>配信が始まっていない（待機中の）URLでは開始できないことがあります。<strong>配信を始めてから</strong>押してください。</li>
+    <li>合言葉（初回Bで設定）は保存済みなので、<strong>触らなくてOK</strong>です。</li>
+  </ul>
+
+  <h3>2. 配信中は、このページのタブを開いたままにする</h3>
+  <blockquote><strong>タブを閉じないでください。</strong> 開いている間、自動でサーバーのスリープを防ぎます（右上に「💤 スリープ防止: 起動中」と表示）。</blockquote>
+  <p>これで、視聴者が「<strong>合言葉＋曲名</strong>」を打つと配信画面に自動で表示されます。</p>
   <figure><img src="images/05-overlay.svg" alt="配信画面イメージ"></figure>
   <ul>
     <li>一覧は<strong>古い順（待ち行列）</strong>に並びます。新しいリクエストが来ても、表示中のものが消えることはありません。</li>
+    <li>歌い終わった曲は管理ページで「<strong>✕（削除）</strong>」→ 次の曲が繰り上がります。「<strong>🗑 全クリア</strong>」でまとめて消去も可能。</li>
   </ul>
 
-  <h2>配信中の操作</h2>
-  <p>ログインしたページ（<code>/admin/alice</code>）でできること：</p>
+  <h3>3. 配信が終わったら（任意）</h3>
   <ul>
-    <li><strong>🎵 リクエスト一覧</strong>：歌い終わった曲は「✕（削除）」で消すと、次の曲が繰り上がります。</li>
-    <li><strong>🗑 全クリア</strong>：一覧をまとめて空にします。</li>
-    <li><strong>🧪 テスト追加</strong>：表示確認用に、ダミーのリクエストを1件追加します。</li>
-  </ul>
-  <blockquote>
-    <strong>配信中は、このページのタブを開いたままにしておいてください。</strong>
-    開いている間は自動でサーバーのスリープを防ぎます（右上に「💤 スリープ防止: 起動中」と表示）。
-  </blockquote>
-
-  <h2>配信が終わったら</h2>
-  <ul>
-    <li>特別な操作は不要です。次回また同じURLを開いて使えます。</li>
-    <li>別の配信を始めるときは、ステップ2で新しい配信URLを入れて「▶ 開始」し直してください。</li>
+    <li>特に操作は不要です。閉じてOK。</li>
+    <li>きちんと止めたい場合は管理ページで「<strong>■ 停止</strong>」。</li>
+    <li>次回の配信では、また <strong>1.</strong> の「開始」を押すだけです。</li>
   </ul>
 
   <h2>困ったとき</h2>
@@ -162,7 +165,7 @@
     <tr><td>ページを開くと「サーバーは停止中」</td><td>管理者にサーバーの起動を依頼してください。</td></tr>
     <tr><td>リクエストが一覧に出ない</td><td>①「監視中」になっているか ②視聴者の合言葉が設定と一致しているか を確認。</td></tr>
     <tr><td>配信画面の表示が古い／反映されない</td><td>OBSでソースを右クリック →「現在のページのキャッシュを更新」。</td></tr>
-    <tr><td>配信中に急に止まった気がする</td><td>ページの「📋 サーバーログ」を開いて「🔄 ログを更新」。状況がわからなければ画面のログを管理者に共有してください。</td></tr>
+    <tr><td>配信中に急に止まった気がする</td><td>ページの「📋 サーバーログ」を開いて「🔄 ログを更新」。わからなければ画面のログを管理者に共有してください。</td></tr>
   </table>
 
   <hr>

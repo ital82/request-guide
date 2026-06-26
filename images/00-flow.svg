@@ -1,38 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="820" height="200" viewBox="0 0 820 200" font-family="'Yu Gothic','Meiryo',sans-serif">
-  <rect width="820" height="200" fill="#f0f2f5"/>
-  <text x="410" y="34" text-anchor="middle" font-size="20" font-weight="bold" fill="#028090">配信者がやることの全体の流れ</text>
-  <!-- steps -->
-  <g>
-    <rect x="20"  y="70" width="140" height="80" rx="10" fill="#ffffff" stroke="#028090" stroke-width="2"/>
-    <text x="90"  y="100" text-anchor="middle" font-size="22" font-weight="bold" fill="#028090">①</text>
-    <text x="90"  y="126" text-anchor="middle" font-size="14" fill="#333">ログイン</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="300" viewBox="0 0 860 300" font-family="'Yu Gothic','Meiryo',sans-serif">
+  <rect width="860" height="300" fill="#f0f2f5"/>
+  <text x="430" y="34" text-anchor="middle" font-size="20" font-weight="bold" fill="#028090">準備は最初の1回だけ。毎回やるのは「開始」だけ</text>
 
-    <rect x="190" y="70" width="140" height="80" rx="10" fill="#ffffff" stroke="#028090" stroke-width="2"/>
-    <text x="260" y="100" text-anchor="middle" font-size="22" font-weight="bold" fill="#028090">②</text>
-    <text x="260" y="120" text-anchor="middle" font-size="14" fill="#333">YouTube配信</text>
-    <text x="260" y="138" text-anchor="middle" font-size="14" fill="#333">を「開始」</text>
+  <!-- ===== 初回だけ ブロック ===== -->
+  <rect x="20" y="58" width="540" height="200" rx="14" fill="#eef7f8" stroke="#028090" stroke-width="2"/>
+  <rect x="20" y="58" width="540" height="34" rx="14" fill="#028090"/>
+  <text x="40" y="81" font-size="16" font-weight="bold" fill="#ffffff">🔧 初回だけ（1回やれば使い回せる）</text>
 
-    <rect x="360" y="70" width="140" height="80" rx="10" fill="#ffffff" stroke="#028090" stroke-width="2"/>
-    <text x="430" y="100" text-anchor="middle" font-size="22" font-weight="bold" fill="#028090">③</text>
-    <text x="430" y="120" text-anchor="middle" font-size="14" fill="#333">合言葉(プレ</text>
-    <text x="430" y="138" text-anchor="middle" font-size="14" fill="#333">フィックス)設定</text>
+  <!-- A login -->
+  <rect x="44" y="110" width="150" height="120" rx="10" fill="#ffffff" stroke="#cfe0e3"/>
+  <text x="119" y="138" text-anchor="middle" font-size="15" font-weight="bold" fill="#028090">A. ログイン</text>
+  <text x="119" y="166" text-anchor="middle" font-size="13" fill="#444">パスワード入力</text>
+  <text x="119" y="190" text-anchor="middle" font-size="12" fill="#777">次回から</text>
+  <text x="119" y="208" text-anchor="middle" font-size="12" fill="#777">自動ログイン</text>
 
-    <rect x="530" y="70" width="140" height="80" rx="10" fill="#ffffff" stroke="#028090" stroke-width="2"/>
-    <text x="600" y="100" text-anchor="middle" font-size="22" font-weight="bold" fill="#028090">④</text>
-    <text x="600" y="120" text-anchor="middle" font-size="14" fill="#333">URLをコピーし</text>
-    <text x="600" y="138" text-anchor="middle" font-size="14" fill="#333">OBSに貼る</text>
+  <!-- B prefix -->
+  <rect x="208" y="110" width="150" height="120" rx="10" fill="#ffffff" stroke="#cfe0e3"/>
+  <text x="283" y="138" text-anchor="middle" font-size="15" font-weight="bold" fill="#028090">B. 合言葉</text>
+  <text x="283" y="166" text-anchor="middle" font-size="13" fill="#444">例: #req</text>
+  <text x="283" y="190" text-anchor="middle" font-size="12" fill="#777">保存すれば</text>
+  <text x="283" y="208" text-anchor="middle" font-size="12" fill="#777">ずっと有効</text>
 
-    <rect x="700" y="70" width="100" height="80" rx="10" fill="#ffffff" stroke="#02C39A" stroke-width="2"/>
-    <text x="750" y="100" text-anchor="middle" font-size="22" font-weight="bold" fill="#02C39A">⑤</text>
-    <text x="750" y="120" text-anchor="middle" font-size="13" fill="#333">配信中はタブ</text>
-    <text x="750" y="138" text-anchor="middle" font-size="13" fill="#333">を開いたまま</text>
-  </g>
-  <!-- arrows -->
-  <g fill="#028090">
-    <polygon points="165,110 185,110 175,100 175,120"/>
-    <polygon points="335,110 355,110 345,100 345,120"/>
-    <polygon points="505,110 525,110 515,100 515,120"/>
-    <polygon points="675,110 695,110 685,100 685,120"/>
-  </g>
-  <text x="410" y="185" text-anchor="middle" font-size="13" fill="#777">※ サーバーの起動は管理者が行います。配信者は起動済みの画面URLを開くところから始めます。</text>
+  <!-- C obs -->
+  <rect x="372" y="110" width="166" height="120" rx="10" fill="#ffffff" stroke="#cfe0e3"/>
+  <text x="455" y="138" text-anchor="middle" font-size="15" font-weight="bold" fill="#028090">C. OBSに登録</text>
+  <text x="455" y="166" text-anchor="middle" font-size="13" fill="#444">URLをコピー→</text>
+  <text x="455" y="184" text-anchor="middle" font-size="13" fill="#444">ブラウザソース</text>
+  <text x="455" y="208" text-anchor="middle" font-size="12" fill="#777">一度きり</text>
+
+  <!-- big arrow to 毎回 -->
+  <polygon points="575,158 575,138 615,158 575,178" fill="#02C39A"/>
+
+  <!-- ===== 毎回 ブロック ===== -->
+  <rect x="624" y="58" width="216" height="200" rx="14" fill="#e6fbf4" stroke="#02C39A" stroke-width="2"/>
+  <rect x="624" y="58" width="216" height="34" rx="14" fill="#02C39A"/>
+  <text x="644" y="81" font-size="16" font-weight="bold" fill="#ffffff">🔁 毎回（これだけ）</text>
+
+  <rect x="648" y="110" width="168" height="56" rx="10" fill="#ffffff" stroke="#bdeedd"/>
+  <text x="732" y="135" text-anchor="middle" font-size="15" font-weight="bold" fill="#019c7b">① ▶ 開始 を押す</text>
+  <text x="732" y="155" text-anchor="middle" font-size="12" fill="#777">配信URLを貼って開始</text>
+
+  <rect x="648" y="174" width="168" height="56" rx="10" fill="#ffffff" stroke="#bdeedd"/>
+  <text x="732" y="199" text-anchor="middle" font-size="15" font-weight="bold" fill="#019c7b">② タブは開いたまま</text>
+  <text x="732" y="219" text-anchor="middle" font-size="12" fill="#777">スリープ防止</text>
+
+  <text x="430" y="284" text-anchor="middle" font-size="13" fill="#777">※ サーバーの起動は管理者が行います。配信者は起動済みのページを開くところから。</text>
 </svg>
