@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="860" height="300" viewBox="0 0 860 300" font-family="'Yu Gothic','Meiryo',sans-serif">
-  <rect width="860" height="300" fill="#f0f2f5"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="322" viewBox="0 0 860 322" font-family="'Yu Gothic','Meiryo',sans-serif">
+  <rect width="860" height="322" fill="#f0f2f5"/>
   <text x="430" y="34" text-anchor="middle" font-size="20" font-weight="bold" fill="#028090">準備は最初の1回だけ。毎回やるのは「開始」だけ</text>
 
   <!-- ===== 初回だけ ブロック ===== -->
@@ -41,8 +41,9 @@
   <text x="732" y="155" text-anchor="middle" font-size="12" fill="#777">配信URLを貼って開始</text>
 
   <rect x="648" y="174" width="168" height="56" rx="10" fill="#ffffff" stroke="#bdeedd"/>
-  <text x="732" y="199" text-anchor="middle" font-size="15" font-weight="bold" fill="#019c7b">② タブは開いたまま</text>
-  <text x="732" y="219" text-anchor="middle" font-size="12" fill="#777">スリープ防止</text>
+  <text x="732" y="196" text-anchor="middle" font-size="13" font-weight="bold" fill="#019c7b">② 管理ページは開いたまま</text>
+  <text x="732" y="214" text-anchor="middle" font-size="11" fill="#777">URL入力・曲を管理する画面</text>
 
   <text x="430" y="284" text-anchor="middle" font-size="13" fill="#777">※ サーバーの起動は管理者が行います。配信者は起動済みのページを開くところから。</text>
+  <text x="430" y="306" text-anchor="middle" font-size="13" fill="#028090">📱 管理ページはスマホ・タブレットでも操作できます（配信中はPCのOBSがスリープ防止になります）</text>
 </svg>
