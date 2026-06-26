@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="430" viewBox="0 0 760 430" font-family="'Yu Gothic','Meiryo',sans-serif">
-  <rect width="760" height="430" fill="#f0f2f5"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="320" viewBox="0 0 760 320" font-family="'Yu Gothic','Meiryo',sans-serif">
+  <rect width="760" height="320" fill="#f0f2f5"/>
   <!-- header -->
   <rect x="0" y="0" width="760" height="56" fill="#028090"/>
   <text x="200" y="36" font-size="20" font-weight="bold" fill="#ffffff">🎵 alice</text>
@@ -7,27 +7,25 @@
   <text x="525" y="34" text-anchor="middle" font-size="13" fill="#ffffff">✅ 認証済み</text>
 
   <!-- YouTube card -->
-  <rect x="30" y="80" width="700" height="150" rx="10" fill="#ffffff" stroke="#e0e0e0"/>
-  <text x="55" y="116" font-size="18" font-weight="bold" fill="#333">📺 YouTube監視</text>
-  <rect x="55" y="130" width="650" height="34" rx="6" fill="#fde8e8"/>
-  <text x="70" y="152" font-size="14" font-weight="bold" fill="#c0392b">停止中</text>
-  <rect x="55" y="176" width="430" height="40" rx="6" fill="#fafafa" stroke="#cccccc"/>
-  <text x="70" y="201" font-size="13" fill="#999">YouTubeライブURL または 動画ID</text>
-  <rect x="495" y="176" width="100" height="40" rx="6" fill="#028090"/>
-  <text x="545" y="201" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">▶ 開始</text>
-  <rect x="605" y="176" width="100" height="40" rx="6" fill="#6c757d"/>
-  <text x="655" y="201" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">■ 停止</text>
+  <rect x="30" y="84" width="700" height="156" rx="10" fill="#ffffff" stroke="#e0e0e0"/>
+  <text x="55" y="120" font-size="18" font-weight="bold" fill="#333">📺 YouTube監視</text>
 
-  <!-- arrow note -->
-  <text x="55" y="260" font-size="13" fill="#028090">① 配信URLを貼って「▶ 開始」→ バーが緑の「監視中」になればOK</text>
+  <!-- status: 停止中 → 監視中 -->
+  <rect x="55" y="134" width="310" height="34" rx="6" fill="#fde8e8"/>
+  <text x="70" y="156" font-size="14" font-weight="bold" fill="#c0392b">停止中</text>
+  <polygon points="378,151 398,151 388,141 388,161" fill="#028090"/>
+  <rect x="410" y="134" width="295" height="34" rx="6" fill="#d8f3e6"/>
+  <text x="425" y="156" font-size="14" font-weight="bold" fill="#1c7a4e">監視中（緑になればOK）</text>
 
-  <!-- 設定 card -->
-  <rect x="30" y="285" width="700" height="120" rx="10" fill="#ffffff" stroke="#e0e0e0"/>
-  <text x="55" y="320" font-size="18" font-weight="bold" fill="#333">⚙ 設定</text>
-  <text x="55" y="345" font-size="13" fill="#555">リクエストを拾うトリガー文字列（合言葉）</text>
-  <rect x="55" y="356" width="240" height="38" rx="6" fill="#fafafa" stroke="#cccccc"/>
-  <text x="70" y="380" font-size="14" fill="#333">#req</text>
-  <rect x="305" y="356" width="90" height="38" rx="6" fill="#028090"/>
-  <text x="350" y="380" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">保存</text>
-  <text x="420" y="380" font-size="13" fill="#028090">② 視聴者が打つ合言葉を決めて「保存」</text>
+  <!-- input + buttons -->
+  <rect x="55" y="182" width="430" height="42" rx="6" fill="#fafafa" stroke="#cccccc"/>
+  <text x="70" y="208" font-size="13" fill="#999">YouTubeライブURL または 動画ID</text>
+  <rect x="495" y="182" width="100" height="42" rx="6" fill="#028090"/>
+  <text x="545" y="208" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">▶ 開始</text>
+  <rect x="605" y="182" width="100" height="42" rx="6" fill="#6c757d"/>
+  <text x="655" y="208" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">■ 停止</text>
+
+  <!-- note -->
+  <text x="30" y="270" font-size="14" fill="#02C39A">▶ その日の配信URLを貼って「▶ 開始」。バーが緑の「監視中」になれば成功です。</text>
+  <text x="30" y="296" font-size="13" fill="#777">※ ここだけが毎回の操作。合言葉などの設定は触らなくてOK。</text>
 </svg>
