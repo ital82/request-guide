@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>オーバーレイ設定ツール（独立版）</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Yu Gothic','Meiryo',sans-serif; margin: 0; background: #f5f5f5; color: #222; }
+  h1 { color: #028090; border-bottom: 3px solid #02C39A; padding: 16px 20px; margin: 0; background: #fff; font-size: 20px; }
+  h1 small { font-size: 13px; color: #888; font-weight: normal; }
+  .container { display: flex; align-items: flex-start; }
+  .left { width: 42%; min-width: 360px; padding: 18px; overflow-y: auto; height: calc(100vh - 58px); }
+  .right { width: 58%; padding: 18px; position: sticky; top: 0; height: calc(100vh - 58px); }
+  .section { background: #fff; padding: 16px 18px; margin: 0 0 16px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,.08); }
+  .section h2 { margin: 0 0 12px; color: #028090; border-bottom: 2px solid #02C39A; padding-bottom: 6px; font-size: 16px; }
+  .control-group { margin: 12px 0; }
+  label { display: block; font-weight: bold; margin-bottom: 4px; font-size: 14px; }
+  input[type=text], input[type=url], select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+  input[type=range] { width: 100%; }
+  small { color: #666; display: block; margin-top: 4px; }
+  button { background: #028090; color: #fff; border: none; padding: 9px 16px; border-radius: 5px; cursor: pointer; font-size: 14px; margin: 4px 4px 0 0; }
+  button:hover { background: #02C39A; }
+  button.danger { background: #dc3545; }
+  button.ghost { background: #6c757d; }
+  .url-output { background: #f1f8f9; padding: 12px; border-radius: 5px; font-family: Consolas,monospace; font-size: 12px; word-break: break-all; border: 1px solid #cfe0e3; margin-top: 10px; }
+  .status { font-size: 13px; color: #155724; margin-top: 8px; min-height: 18px; }
+  .status.err { color: #dc3545; }
+  .preview-head { color: #028090; font-weight: bold; margin-bottom: 8px; }
+  #stage {
+    width: 100%; height: calc(100% - 30px); border-radius: 8px; overflow: hidden;
+    border: 2px solid #028090; background-color: #3a4a6b;
+    background-image:
+      linear-gradient(45deg, rgba(255,255,255,.06) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.06) 75%),
+      linear-gradient(45deg, rgba(255,255,255,.06) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.06) 75%);
+    background-size: 32px 32px; background-position: 0 0, 16px 16px;
+    display: flex; justify-content: center; align-items: flex-start; padding: 10px;
+  }
+  .notice { background: #fff8e1; border-left: 4px solid #ffc107; padding: 8px 12px; border-radius: 4px; font-size: 13px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+<h1>🎵 オーバーレイ設定ツール（独立版） <small>サーバー起動不要・ここで見た目を決めてURLを作れます</small></h1>
+<div class="container">
+  <div class="left">
+    <div class="notice">このツールは<strong>サーバーが停止中でも使えます</strong>。プレビューはこのページ内で描画（サンプルデータ）。完成したら「URLをコピー」してOBSに貼ってください。</div>
+
+    <div class="section">
+      <h2>🔗 出力先</h2>
+      <div class="control-group">
+        <label>サーバーURL（ベース）</label>
+        <input type="url" id="serverUrl" placeholder="例: https://xxxx.replit.app">
+        <small>OBSに貼る最終URLの先頭。末尾スラッシュ不要。</small>
+      </div>
+      <div class="control-group">
+        <label>ルーム名</label>
+        <input type="text" id="roomName" placeholder="例: alice（空なら単一テナント /overlay）">
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>💾 設定管理</h2>
+      <div class="control-group">
+        <label>プリセット</label>
+        <select id="presetSelect" onchange="loadPreset()">
+          <option value="">-- プリセットを選択 --</option>
+          <option value="compact-2">コンパクト2件表示</option>
+          <option value="compact-3">コンパクト3件表示</option>
+          <option value="standard-5">標準5件表示</option>
+          <option value="large-10">大きく10件表示</option>
+          <option value="fullscreen">フルスクリーン表示</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label>保存した設定</label>
+        <select id="savedConfigSelect"><option value="">-- 保存した設定を選択 --</option></select>
+        <small>※ このブラウザに保存されます</small>
+      </div>
+      <button onclick="loadSelectedConfig()">読み込み</button>
+      <button class="danger" onclick="deleteSelectedConfig()">削除</button>
+      <hr style="margin:12px 0;border:none;border-top:1px solid #eee;">
+      <div class="control-group">
+        <label>新しい設定として保存（設定名）</label>
+        <input type="text" id="configName" placeholder="例: 私の配信設定">
+      </div>
+      <button onclick="saveConfig()">現在の設定を保存</button>
+      <hr style="margin:12px 0;border:none;border-top:1px solid #eee;">
+      <div class="control-group">
+        <label>URLから設定を復元</label>
+        <input type="text" id="importUrl" placeholder="https://.../overlay/alice?bgcolor=... を貼り付け">
+      </div>
+      <button onclick="importFromUrl()">URLから読み込み</button>
+      <button class="ghost" onclick="resetToDefault()">デフォルトに戻す</button>
+      <div class="status" id="configStatus"></div>
+    </div>
+
+    <div class="section">
+      <h2>📐 表示エリア設定</h2>
+      <div class="control-group"><label>コンテナ幅</label><input type="text" id="containerWidth" value="auto"><small>400px / 30vw / auto</small></div>
+      <div class="control-group"><label>コンテナ高さ</label><input type="text" id="containerHeight" value="auto"><small>600px / 80vh / auto</small></div>
+      <div class="control-group"><label>コンテナ余白 (px): <span id="containerPaddingValue">20</span></label><input type="range" id="containerPadding" min="0" max="50" value="20"></div>
+      <div class="control-group"><label>リクエスト間隔 (px): <span id="itemGapValue">15</span></label><input type="range" id="itemGap" min="5" max="40" value="15"></div>
+      <div class="control-group"><label>リクエストカード余白</label><input type="text" id="itemPadding" value="20px 25px"><small>CSS形式: 上下 左右</small></div>
+      <div class="control-group"><label>表示件数上限: <span id="displayLimitValue">10</span>件</label><input type="range" id="displayLimit" min="1" max="20" value="10"></div>
+    </div>
+
+    <div class="section">
+      <h2>🎨 カスタマイズ</h2>
+      <div class="control-group"><label>背景色</label><input type="color" id="bgcolor" value="#028090"></div>
+      <div class="control-group"><label>全体背景の透明度 (%): <span id="bgOpacityValue">0</span></label><input type="range" id="bgOpacity" min="0" max="100" value="0"></div>
+      <div class="control-group"><label>タイトル色</label><input type="color" id="titleColor" value="#02C39A"></div>
+      <div class="control-group"><label>タイトル背景の透明度 (%): <span id="titleBgOpacityValue">30</span></label><input type="range" id="titleBgOpacity" min="0" max="100" value="30"></div>
+      <div class="control-group"><label>カード背景色</label><input type="color" id="cardBg" value="#028090"></div>
+      <div class="control-group"><label>カード背景の透明度 (%): <span id="cardBgOpacityValue">95</span></label><input type="range" id="cardBgOpacity" min="0" max="100" value="95"></div>
+      <div class="control-group"><label>テキスト色</label><input type="color" id="textColor" value="#FFFFFF"></div>
+      <div class="control-group"><label>サブテキスト色（投稿者名・時刻）</label><input type="color" id="subTextColor" value="#FFFFFF"></div>
+      <div class="control-group"><label>タイトルサイズ (px): <span id="titleSizeValue">32</span></label><input type="range" id="titleSize" min="16" max="64" value="32"></div>
+      <div class="control-group"><label>テキストサイズ (px): <span id="textSizeValue">26</span></label><input type="range" id="textSize" min="12" max="48" value="26"></div>
+      <div class="control-group"><label>サブテキストサイズ (px): <span id="subTextSizeValue">16</span></label><input type="range" id="subTextSize" min="10" max="32" value="16"></div>
+      <div class="control-group">
+        <label>アニメーション</label>
+        <select id="animation">
+          <option value="slideInLeft">スライドイン (左から) ←</option>
+          <option value="slideInRight">スライドイン (右から) →</option>
+          <option value="slideInBottom">スライドイン (下から) ↑</option>
+          <option value="fadeIn">フェードイン 💫</option>
+          <option value="zoomIn">ズームイン 🔍</option>
+          <option value="bounceIn">バウンス 🏀</option>
+          <option value="flipIn">回転フリップ 🔄</option>
+          <option value="slideRotate">スライド+回転 🌀</option>
+          <option value="glowPulse">発光パルス ✨</option>
+          <option value="typewriter">タイプライター ⌨️</option>
+          <option value="none">なし</option>
+        </select>
+        <small>※ 動きはOBS上の本番でのみ再生されます（プレビューは静止）</small>
+      </div>
+      <div class="control-group"><label>アニメーション速度 (秒): <span id="animSpeedValue">0.5</span></label><input type="range" id="animSpeed" min="0.1" max="3" step="0.1" value="0.5"></div>
+      <div class="control-group"><label><input type="checkbox" id="showTitle" checked> タイトル欄を表示</label></div>
+      <div class="control-group"><label><input type="checkbox" id="showAuthor" checked> 投稿者名を表示</label></div>
+      <div class="control-group"><label><input type="checkbox" id="showNumber"> 通し番号を表示</label></div>
+      <div class="control-group"><label><input type="checkbox" id="showTimestamp" checked> 時刻を表示</label></div>
+      <div class="control-group"><label><input type="checkbox" id="showSongIcon" checked> 曲名の先頭に記号を表示</label></div>
+      <div class="control-group"><label>先頭の記号（アイコン）</label><input type="text" id="icon" value="🎵" maxlength="8" placeholder="例: 🎵 / 🎶 / ♪（空欄で無し）"><small>タイトル欄と曲名先頭に使用</small></div>
+      <button onclick="copyURL()">📋 URLをコピー</button>
+      <div class="url-output" id="urlOutput"></div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="preview-head">👁️ プレビュー（このページ内で描画・サーバー不要）</div>
+    <div id="stage"><div id="preview"></div></div>
+  </div>
+</div>
+
+<script>
+  const DEFAULTS = { containerWidth: 'auto', containerHeight: 'auto', containerPadding: '20', itemGap: '15', itemPadding: '20px 25px', displayLimit: '10', bgcolor: '#028090', titleColor: '#02C39A', textColor: '#FFFFFF', subTextColor: '#FFFFFF', cardBg: '#028090', bgOpacity: '0', titleBgOpacity: '30', cardBgOpacity: '95', titleSize: '32', textSize: '26', subTextSize: '16', animation: 'slideInLeft', animSpeed: '0.5', showTitle: true, showAuthor: true, showNumber: false, showTimestamp: true, showSongIcon: true, icon: '🎵' };
+
+  const presets = {
+    'compact-2': { containerWidth: '400px', containerHeight: '280px', containerPadding: '15', itemGap: '10', itemPadding: '15px 20px', displayLimit: '2', textSize: '22', subTextSize: '14', titleSize: '28', showTitle: false },
+    'compact-3': { containerWidth: '450px', containerHeight: '400px', containerPadding: '15', itemGap: '12', itemPadding: '15px 20px', displayLimit: '3', textSize: '24', subTextSize: '14', titleSize: '30' },
+    'standard-5': { containerWidth: '500px', containerHeight: '600px', containerPadding: '20', itemGap: '15', itemPadding: '20px 25px', displayLimit: '5', textSize: '26', subTextSize: '16', titleSize: '32' },
+    'large-10': { containerWidth: '600px', containerHeight: '800px', containerPadding: '25', itemGap: '18', itemPadding: '25px 30px', displayLimit: '10', textSize: '28', subTextSize: '18', titleSize: '36' },
+    'fullscreen': { containerWidth: '100%', containerHeight: '100%', containerPadding: '30', itemGap: '20', itemPadding: '25px 30px', displayLimit: '20', textSize: '30', subTextSize: '20', titleSize: '40' }
+  };
+
+  const MOCK = [
+    { requestNumber: 1, song: 'テスト1', authorName: 'viewer_a', timestamp: '19:24' },
+    { requestNumber: 2, song: 'テスト2', authorName: 'viewer_b', timestamp: '19:25' },
+    { requestNumber: 3, song: 'テスト3', authorName: 'viewer_c', timestamp: '19:26' },
+    { requestNumber: 4, song: 'テスト4', authorName: 'viewer_d', timestamp: '19:27' },
+    { requestNumber: 5, song: 'テスト5', authorName: 'viewer_e', timestamp: '19:28' }
+  ];
+
+  const $ = id => document.getElementById(id);
+  function hexToRgb(hex) { hex = String(hex).replace('#', ''); return parseInt(hex.slice(0,2),16) + ', ' + parseInt(hex.slice(2,4),16) + ', ' + parseInt(hex.slice(4,6),16); }
+  function esc(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+  function getConfig() {
+    return {
+      containerWidth: $('containerWidth').value.trim() || 'auto',
+      containerHeight: $('containerHeight').value.trim() || 'auto',
+      containerPadding: $('containerPadding').value,
+      itemGap: $('itemGap').value,
+      itemPadding: $('itemPadding').value.trim() || '20px 25px',
+      displayLimit: $('displayLimit').value,
+      bgcolor: $('bgcolor').value, titleColor: $('titleColor').value, textColor: $('textColor').value,
+      subTextColor: $('subTextColor').value, cardBg: $('cardBg').value,
+      bgOpacity: $('bgOpacity').value, titleBgOpacity: $('titleBgOpacity').value, cardBgOpacity: $('cardBgOpacity').value,
+      titleSize: $('titleSize').value, textSize: $('textSize').value, subTextSize: $('subTextSize').value,
+      animation: $('animation').value, animSpeed: $('animSpeed').value,
+      showTitle: $('showTitle').checked, showAuthor: $('showAuthor').checked, showNumber: $('showNumber').checked,
+      showTimestamp: $('showTimestamp').checked, showSongIcon: $('showSongIcon').checked, icon: $('icon').value
+    };
+  }
+
+  function applyConfig(c) {
+    const set = (id, v) => { if (v !== undefined && $(id)) $(id).value = v; };
+    const chk = (id, v) => { if (v !== undefined && $(id)) $(id).checked = v; };
+    ['containerWidth','containerHeight','containerPadding','itemGap','itemPadding','displayLimit','bgcolor','titleColor','textColor','subTextColor','cardBg','bgOpacity','titleBgOpacity','cardBgOpacity','titleSize','textSize','subTextSize','animation','animSpeed','icon'].forEach(k => set(k, c[k]));
+    ['showTitle','showAuthor','showNumber','showTimestamp','showSongIcon'].forEach(k => chk(k, c[k]));
+    syncRangeLabels();
+    render();
+  }
+
+  function syncRangeLabels() {
+    [['containerPadding','containerPaddingValue'],['itemGap','itemGapValue'],['displayLimit','displayLimitValue'],['bgOpacity','bgOpacityValue'],['titleBgOpacity','titleBgOpacityValue'],['cardBgOpacity','cardBgOpacityValue'],['titleSize','titleSizeValue'],['textSize','textSizeValue'],['subTextSize','subTextSizeValue'],['animSpeed','animSpeedValue']].forEach(pair => { if ($(pair[0]) && $(pair[1])) $(pair[1]).textContent = $(pair[0]).value; });
+  }
+
+  function render() {
+    const c = getConfig();
+    const limit = parseInt(c.displayLimit) || 10;
+    const reqs = MOCK.slice(0, limit);
+    const cardBgA = Math.max(0, (parseInt(c.cardBgOpacity) - 10)) / 100;
+    let html = '<div style="'
+      + 'width:' + c.containerWidth + ';height:' + c.containerHeight + ';max-height:100%;'
+      + 'padding:' + c.containerPadding + 'px;box-sizing:border-box;overflow:hidden;'
+      + 'background:' + (parseInt(c.bgOpacity) > 0 ? 'rgba(' + hexToRgb(c.bgcolor) + ',' + (c.bgOpacity/100) + ')' : 'transparent') + ';">';
+    if (c.showTitle) {
+      html += '<div style="font-size:' + c.titleSize + 'px;font-weight:bold;text-align:center;color:' + c.titleColor + ';'
+        + 'text-shadow:3px 3px 6px rgba(0,0,0,.9);margin-bottom:20px;padding:12px;'
+        + 'background:rgba(' + hexToRgb(c.bgcolor) + ',' + (c.titleBgOpacity/100) + ');border-radius:15px;">'
+        + (c.icon ? esc(c.icon) + ' ' : '') + 'リクエスト一覧</div>';
+    }
+    html += '<div style="display:flex;flex-direction:column;gap:' + c.itemGap + 'px;">';
+    reqs.forEach(r => {
+      html += '<div style="background:linear-gradient(135deg,rgba(' + hexToRgb(c.cardBg) + ',' + (c.cardBgOpacity/100) + '),rgba(' + hexToRgb(c.cardBg) + ',' + cardBgA + '));'
+        + 'padding:' + c.itemPadding + ';border-radius:12px;border-left:5px solid ' + c.titleColor + ';box-shadow:0 6px 12px rgba(0,0,0,.5);">';
+      if (c.showNumber) html += '<div style="font-size:' + c.subTextSize + 'px;color:rgba(' + hexToRgb(c.subTextColor) + ',.8);font-weight:bold;margin-bottom:5px;">#' + r.requestNumber + '</div>';
+      const songIcon = (c.showSongIcon && c.icon) ? esc(c.icon) + ' ' : '';
+      html += '<div style="font-size:' + c.textSize + 'px;font-weight:bold;color:' + c.textColor + ';margin-bottom:8px;text-shadow:2px 2px 4px rgba(0,0,0,.7);">' + songIcon + esc(r.song) + '</div>';
+      html += '<div style="font-size:' + c.subTextSize + 'px;color:rgba(' + hexToRgb(c.subTextColor) + ',.8);display:flex;gap:10px;">';
+      if (c.showAuthor) html += '<span>@' + esc(r.authorName) + '</span>';
+      if (c.showTimestamp) html += '<span>' + esc(r.timestamp) + '</span>';
+      html += '</div></div>';
+    });
+    html += '</div></div>';
+    $('preview').innerHTML = html;
+    $('urlOutput').textContent = generateURL();
+  }
+
+  function generateURL() {
+    const p = new URLSearchParams();
+    const c = getConfig();
+    if (c.containerWidth !== 'auto') p.set('width', c.containerWidth);
+    if (c.containerHeight !== 'auto') p.set('height', c.containerHeight);
+    if (c.containerPadding !== '20') p.set('padding', c.containerPadding);
+    if (c.itemGap !== '15') p.set('gap', c.itemGap);
+    if (c.itemPadding !== '20px 25px') p.set('itemPadding', c.itemPadding);
+    if (c.displayLimit !== '10') p.set('displayLimit', c.displayLimit);
+    if (c.bgcolor.replace('#','') !== '028090') p.set('bgcolor', c.bgcolor.replace('#',''));
+    if (c.titleColor.replace('#','') !== '02C39A') p.set('titleColor', c.titleColor.replace('#',''));
+    if (c.textColor.replace('#','') !== 'FFFFFF') p.set('textColor', c.textColor.replace('#',''));
+    if (c.subTextColor.replace('#','') !== 'FFFFFF') p.set('subTextColor', c.subTextColor.replace('#',''));
+    if (c.cardBg.replace('#','') !== '028090') p.set('cardBg', c.cardBg.replace('#',''));
+    if (c.bgOpacity !== '0') p.set('bgOpacity', c.bgOpacity);
+    if (c.titleBgOpacity !== '30') p.set('titleBgOpacity', c.titleBgOpacity);
+    if (c.cardBgOpacity !== '95') p.set('cardBgOpacity', c.cardBgOpacity);
+    if (c.titleSize !== '32') p.set('titleSize', c.titleSize);
+    if (c.textSize !== '26') p.set('textSize', c.textSize);
+    if (c.subTextSize !== '16') p.set('subTextSize', c.subTextSize);
+    if (c.animation !== 'slideInLeft') p.set('animation', c.animation);
+    if (c.animSpeed !== '0.5') p.set('animSpeed', c.animSpeed);
+    if (!c.showTitle) p.set('showTitle', 'false');
+    if (!c.showAuthor) p.set('showAuthor', 'false');
+    if (c.showNumber) p.set('showNumber', 'true');
+    if (!c.showTimestamp) p.set('showTimestamp', 'false');
+    if (!c.showSongIcon) p.set('showSongIcon', 'false');
+    if (c.icon !== '🎵') p.set('icon', c.icon);
+    const base = ($('serverUrl').value || '').trim().replace(/[/]+$/, '');
+    const room = ($('roomName').value || '').trim();
+    const path = room ? '/overlay/' + room : '/overlay';
+    const qs = p.toString();
+    return (base || '（サーバーURL未設定）') + path + (qs ? '?' + qs : '');
+  }
+
+  function configFromParams(params) {
+    const c = Object.assign({}, DEFAULTS);
+    const map = { width: 'containerWidth', height: 'containerHeight', padding: 'containerPadding', gap: 'itemGap', itemPadding: 'itemPadding', displayLimit: 'displayLimit', bgOpacity: 'bgOpacity', titleBgOpacity: 'titleBgOpacity', cardBgOpacity: 'cardBgOpacity', titleSize: 'titleSize', textSize: 'textSize', subTextSize: 'subTextSize', animation: 'animation', animSpeed: 'animSpeed' };
+    for (const k in map) if (params.has(k)) c[map[k]] = params.get(k);
+    ['bgcolor','titleColor','textColor','subTextColor','cardBg'].forEach(k => { if (params.has(k)) c[k] = '#' + params.get(k); });
+    c.showTitle = params.get('showTitle') !== 'false';
+    c.showAuthor = params.get('showAuthor') !== 'false';
+    c.showNumber = params.get('showNumber') === 'true';
+    c.showTimestamp = params.get('showTimestamp') !== 'false';
+    c.showSongIcon = params.get('showSongIcon') !== 'false';
+    if (params.has('icon')) c.icon = params.get('icon');
+    return c;
+  }
+
+  function copyURL() {
+    const url = generateURL();
+    if (url.indexOf('（サーバーURL未設定）') === 0) { showStatus('先に「サーバーURL」を入力してください', true); return; }
+    navigator.clipboard.writeText(url).then(() => showStatus('URLをコピーしました')).catch(() => showStatus('コピーに失敗しました', true));
+  }
+
+  function showStatus(m, err) { const el = $('configStatus'); el.textContent = m; el.className = 'status' + (err ? ' err' : ''); setTimeout(() => { el.textContent = ''; }, 3000); }
+
+  function loadPreset() { const n = $('presetSelect').value; if (!n || !presets[n]) return; applyConfig(Object.assign({}, DEFAULTS, presets[n])); showStatus('プリセットを適用しました'); }
+
+  function refreshSaved() {
+    const sel = $('savedConfigSelect'); const cur = sel.value;
+    sel.innerHTML = '<option value="">-- 保存した設定を選択 --</option>';
+    const names = [];
+    for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf('overlay-config-') === 0) names.push(k.slice('overlay-config-'.length)); }
+    names.sort().forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = n; sel.appendChild(o); });
+    if (cur) sel.value = cur;
+  }
+  function saveConfig() { const n = $('configName').value.trim(); if (!n) { showStatus('設定名を入力してください', true); return; } localStorage.setItem('overlay-config-' + n, JSON.stringify(getConfig())); $('configName').value = ''; refreshSaved(); $('savedConfigSelect').value = n; showStatus('設定「' + n + '」を保存しました'); }
+  function loadSelectedConfig() { const n = $('savedConfigSelect').value; if (!n) { showStatus('設定を選択してください', true); return; } const raw = localStorage.getItem('overlay-config-' + n); if (!raw) { showStatus('見つかりません', true); return; } applyConfig(Object.assign({}, DEFAULTS, JSON.parse(raw))); showStatus('設定「' + n + '」を読み込みました'); }
+  function deleteSelectedConfig() { const n = $('savedConfigSelect').value; if (!n) { showStatus('設定を選択してください', true); return; } localStorage.removeItem('overlay-config-' + n); refreshSaved(); showStatus('設定「' + n + '」を削除しました'); }
+  function importFromUrl() {
+    const raw = $('importUrl').value.trim();
+    if (!raw) { showStatus('URLを入力してください', true); return; }
+    const q = raw.indexOf('?');
+    const params = new URLSearchParams(q >= 0 ? raw.slice(q + 1) : '');
+    const rm = raw.match(/[/]overlay[/]([a-zA-Z0-9]{1,32})/);
+    if (rm) $('roomName').value = rm[1];
+    const bm = raw.match(/^(https?:[/][/][^/]+)/);
+    if (bm) $('serverUrl').value = bm[1];
+    applyConfig(configFromParams(params));
+    showStatus('URLから設定を読み込みました');
+  }
+  function resetToDefault() { if (!confirm('全ての設定をデフォルトに戻しますか?')) return; applyConfig(DEFAULTS); showStatus('デフォルトに戻しました'); }
+
+  document.addEventListener('input', (e) => {
+    syncRangeLabels();
+    render();
+    if (e.target.id === 'serverUrl') localStorage.setItem('overlay-tool-server', e.target.value);
+    if (e.target.id === 'roomName') localStorage.setItem('overlay-tool-room', e.target.value);
+  });
+  document.addEventListener('change', render);
+
+  window.addEventListener('DOMContentLoaded', () => {
+    $('serverUrl').value = localStorage.getItem('overlay-tool-server') || '';
+    $('roomName').value = localStorage.getItem('overlay-tool-room') || '';
+    const sp = new URLSearchParams(location.search);
+    if (sp.get('server')) $('serverUrl').value = sp.get('server');
+    if (sp.get('room')) $('roomName').value = sp.get('room');
+    refreshSaved();
+    syncRangeLabels();
+    render();
+  });
+</script>
+</body>
+</html>
