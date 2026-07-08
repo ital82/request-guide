@@ -147,11 +147,17 @@
   </div>
 
   <div class="right">
-    <div class="preview-head">👁️ プレビュー（このページ内で描画・サーバー不要）</div>
-    <div id="stage"><div id="preview"></div></div>
+    <div class="preview-head">👁️ プレビュー（本番と同じ描画エンジン・サーバー不要）</div>
+    <div id="stage"><iframe id="preview" title="preview" style="width:100%;height:100%;border:0;background:transparent"></iframe></div>
   </div>
 </div>
 
+<!-- 本番と同じ描画エンジンを読み込む（サーバーのオーバーレイと共通） -->
+<script type="module">
+  import * as OverlayRender from './overlay-render.js';
+  window.OverlayRender = OverlayRender;
+  if (window.__renderPreview) window.__renderPreview();
+</script>
 <script>
   const DEFAULTS = { containerWidth: 'auto', containerHeight: 'auto', containerPadding: '20', itemGap: '15', itemPadding: '20px 25px', displayLimit: '10', bgcolor: '#028090', titleColor: '#02C39A', textColor: '#FFFFFF', subTextColor: '#FFFFFF', cardBg: '#028090', bgOpacity: '0', titleBgOpacity: '30', cardBgOpacity: '95', titleSize: '32', textSize: '26', subTextSize: '16', animation: 'slideInLeft', animSpeed: '0.5', showTitle: true, showAuthor: true, showNumber: false, showTimestamp: true, showSongIcon: true, icon: '🎵' };
 
@@ -172,8 +178,6 @@
   ];
 
   const $ = id => document.getElementById(id);
-  function hexToRgb(hex) { hex = String(hex).replace('#', ''); return parseInt(hex.slice(0,2),16) + ', ' + parseInt(hex.slice(2,4),16) + ', ' + parseInt(hex.slice(4,6),16); }
-  function esc(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
 
   function getConfig() {
     return {
@@ -206,37 +210,22 @@
     [['containerPadding','containerPaddingValue'],['itemGap','itemGapValue'],['displayLimit','displayLimitValue'],['bgOpacity','bgOpacityValue'],['titleBgOpacity','titleBgOpacityValue'],['cardBgOpacity','cardBgOpacityValue'],['titleSize','titleSizeValue'],['textSize','textSizeValue'],['subTextSize','subTextSizeValue'],['animSpeed','animSpeedValue']].forEach(pair => { if ($(pair[0]) && $(pair[1])) $(pair[1]).textContent = $(pair[0]).value; });
   }
 
+  // プレビューは本番と同じ overlay-render.js で iframe 内に描画（CSS衝突なし・完全一致）
   function render() {
-    const c = getConfig();
-    const limit = parseInt(c.displayLimit) || 10;
-    const reqs = MOCK.slice(0, limit);
-    const cardBgA = Math.max(0, (parseInt(c.cardBgOpacity) - 10)) / 100;
-    let html = '<div style="'
-      + 'width:' + c.containerWidth + ';height:' + c.containerHeight + ';max-height:100%;'
-      + 'padding:' + c.containerPadding + 'px;box-sizing:border-box;overflow:hidden;'
-      + 'background:' + (parseInt(c.bgOpacity) > 0 ? 'rgba(' + hexToRgb(c.bgcolor) + ',' + (c.bgOpacity/100) + ')' : 'transparent') + ';">';
-    if (c.showTitle) {
-      html += '<div style="font-size:' + c.titleSize + 'px;font-weight:bold;text-align:center;color:' + c.titleColor + ';'
-        + 'text-shadow:3px 3px 6px rgba(0,0,0,.9);margin-bottom:20px;padding:12px;'
-        + 'background:rgba(' + hexToRgb(c.bgcolor) + ',' + (c.titleBgOpacity/100) + ');border-radius:15px;">'
-        + (c.icon ? esc(c.icon) + ' ' : '') + 'リクエスト一覧</div>';
-    }
-    html += '<div style="display:flex;flex-direction:column;gap:' + c.itemGap + 'px;">';
-    reqs.forEach(r => {
-      html += '<div style="background:linear-gradient(135deg,rgba(' + hexToRgb(c.cardBg) + ',' + (c.cardBgOpacity/100) + '),rgba(' + hexToRgb(c.cardBg) + ',' + cardBgA + '));'
-        + 'padding:' + c.itemPadding + ';border-radius:12px;border-left:5px solid ' + c.titleColor + ';box-shadow:0 6px 12px rgba(0,0,0,.5);">';
-      if (c.showNumber) html += '<div style="font-size:' + c.subTextSize + 'px;color:rgba(' + hexToRgb(c.subTextColor) + ',.8);font-weight:bold;margin-bottom:5px;">#' + r.requestNumber + '</div>';
-      const songIcon = (c.showSongIcon && c.icon) ? esc(c.icon) + ' ' : '';
-      html += '<div style="font-size:' + c.textSize + 'px;font-weight:bold;color:' + c.textColor + ';margin-bottom:8px;text-shadow:2px 2px 4px rgba(0,0,0,.7);">' + songIcon + esc(r.song) + '</div>';
-      html += '<div style="font-size:' + c.subTextSize + 'px;color:rgba(' + hexToRgb(c.subTextColor) + ',.8);display:flex;gap:10px;">';
-      if (c.showAuthor) html += '<span>@' + esc(r.authorName) + '</span>';
-      if (c.showTimestamp) html += '<span>' + esc(r.timestamp) + '</span>';
-      html += '</div></div>';
-    });
-    html += '</div></div>';
-    $('preview').innerHTML = html;
     $('urlOutput').textContent = generateURL();
+    const OR = window.OverlayRender;
+    if (!OR) return; // モジュール読込前は後で __renderPreview から再実行される
+    const c = getConfig();
+    const shownAll = new Set(MOCK.map(r => r.requestNumber)); // 新規アニメを付けない（静止プレビュー）
+    const doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>'
+      + OR.overlayStyleText(c)
+      + '</style></head><body><div class="container">'
+      + OR.titleHTML(c)
+      + '<div class="request-list">' + OR.renderRequests(c, MOCK, shownAll).html + '</div>'
+      + '</div></body></html>';
+    $('preview').srcdoc = doc;
   }
+  window.__renderPreview = render;
 
   function generateURL() {
     const p = new URLSearchParams();
