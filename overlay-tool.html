@@ -139,7 +139,7 @@
       <div class="control-group"><label><input type="checkbox" id="showAuthor" checked> 投稿者名を表示</label></div>
       <div class="control-group"><label><input type="checkbox" id="showNumber"> 通し番号を表示</label></div>
       <div class="control-group"><label><input type="checkbox" id="showTimestamp" checked> 時刻を表示</label></div>
-      <div class="control-group"><label><input type="checkbox" id="showSongIcon" checked> 曲名の先頭に記号を表示</label></div>
+      <div class="control-group"><label><input type="checkbox" id="showSongIcon"> 曲名の先頭に記号を表示</label></div>
       <div class="control-group"><label>先頭の記号（アイコン）</label><input type="text" id="icon" value="🎵" maxlength="8" placeholder="例: 🎵 / 🎶 / ♪（空欄で無し）"><small>タイトル欄と曲名先頭に使用</small></div>
       <button onclick="copyURL()">📋 URLをコピー</button>
       <div class="url-output" id="urlOutput"></div>
@@ -159,7 +159,7 @@
   if (window.__renderPreview) window.__renderPreview();
 </script>
 <script>
-  const DEFAULTS = { containerWidth: 'auto', containerHeight: 'auto', containerPadding: '20', itemGap: '15', itemPadding: '20px 25px', displayLimit: '10', bgcolor: '#028090', titleColor: '#02C39A', textColor: '#FFFFFF', subTextColor: '#FFFFFF', cardBg: '#028090', bgOpacity: '0', titleBgOpacity: '30', cardBgOpacity: '95', titleSize: '32', textSize: '26', subTextSize: '16', animation: 'slideInLeft', animSpeed: '0.5', showTitle: true, showAuthor: true, showNumber: false, showTimestamp: true, showSongIcon: true, icon: '🎵' };
+  const DEFAULTS = { containerWidth: 'auto', containerHeight: 'auto', containerPadding: '20', itemGap: '15', itemPadding: '20px 25px', displayLimit: '10', bgcolor: '#028090', titleColor: '#02C39A', textColor: '#FFFFFF', subTextColor: '#FFFFFF', cardBg: '#028090', bgOpacity: '0', titleBgOpacity: '30', cardBgOpacity: '95', titleSize: '32', textSize: '26', subTextSize: '16', animation: 'slideInLeft', animSpeed: '0.5', showTitle: true, showAuthor: true, showNumber: false, showTimestamp: true, showSongIcon: false, icon: '🎵' };
 
   const presets = {
     'compact-2': { containerWidth: '400px', containerHeight: '280px', containerPadding: '15', itemGap: '10', itemPadding: '15px 20px', displayLimit: '2', textSize: '22', subTextSize: '14', titleSize: '28', showTitle: false },
@@ -253,7 +253,7 @@
     if (!c.showAuthor) p.set('showAuthor', 'false');
     if (c.showNumber) p.set('showNumber', 'true');
     if (!c.showTimestamp) p.set('showTimestamp', 'false');
-    if (!c.showSongIcon) p.set('showSongIcon', 'false');
+    if (c.showSongIcon) p.set('showSongIcon', 'true');
     if (c.icon !== '🎵') p.set('icon', c.icon);
     const base = ($('serverUrl').value || '').trim().replace(/[/]+$/, '');
     const room = ($('roomName').value || '').trim();
@@ -271,7 +271,7 @@
     c.showAuthor = params.get('showAuthor') !== 'false';
     c.showNumber = params.get('showNumber') === 'true';
     c.showTimestamp = params.get('showTimestamp') !== 'false';
-    c.showSongIcon = params.get('showSongIcon') !== 'false';
+    c.showSongIcon = params.get('showSongIcon') === 'true';
     if (params.has('icon')) c.icon = params.get('icon');
     return c;
   }
