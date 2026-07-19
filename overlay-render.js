@@ -61,6 +61,8 @@ export function overlayStyleText(cfg) {
     .request-item .number { font-size: ${cfg.subTextSize}px; color: rgba(${hexToRgb(cfg.subTextColor)}, 0.8); font-weight: bold; margin-bottom: 5px; }
     .request-item .song { font-size: ${cfg.textSize}px; font-weight: bold; color: #${col(cfg.textColor)}; margin-bottom: 8px; text-shadow: 2px 2px 4px rgba(0,0,0,0.7); }
     .request-item .meta { font-size: ${cfg.subTextSize}px; color: rgba(${hexToRgb(cfg.subTextColor)}, 0.8); font-weight: normal; display: flex; gap: 10px; }
+    .request-item .sc-badge { display: inline-block; background: #ffca28; color: #3a2a00; font-size: 0.7em; font-weight: bold; padding: 1px 7px; border-radius: 6px; margin-right: 6px; vertical-align: middle; }
+    .request-item .sc-amount { color: #ffca28; font-weight: bold; }
     ${getAnimationCSS(cfg.animation, cfg.animSpeed)}
     .no-requests { text-align: center; font-size: 22px; color: rgba(255,255,255,0.6); padding: 60px 20px; background: rgba(47, 60, 126, 0.3); border-radius: 15px; border: 2px dashed rgba(255,255,255,0.3); }
   `;
@@ -82,19 +84,29 @@ export const NO_REQUESTS_HTML = '<div class="no-requests">リクエストを待�
  * @returns {{html: string, current: Set}} 生成HTMLと今回の表示番号集合
  */
 export function renderRequests(cfg, requests, prevNumbers) {
-  const limit = Number(cfg.displayLimit) > 0 ? Number(cfg.displayLimit) : requests.length;
-  const limited = requests.slice(0, limit);
+  // スパチャ上位固定：SC由来を先頭へ（相対順は維持）。表示件数の絞り込み前に並べ替える。
+  let ordered = requests;
+  if (cfg.scPinTop) {
+    const sc = [], normal = [];
+    for (const r of requests) (r.isSuperChat ? sc : normal).push(r);
+    ordered = sc.concat(normal);
+  }
+  const limit = Number(cfg.displayLimit) > 0 ? Number(cfg.displayLimit) : ordered.length;
+  const limited = ordered.slice(0, limit);
   const current = new Set(limited.map((r) => r.requestNumber));
   if (limited.length === 0) return { html: NO_REQUESTS_HTML, current };
 
   const html = limited.map((req) => {
     const isNew = prevNumbers && !prevNumbers.has(req.requestNumber);
-    let h = `<div class="request-item${isNew ? ' new-item' : ''}" data-number="${req.requestNumber}">`;
+    const scClass = req.isSuperChat ? ' sc-item' : '';
+    let h = `<div class="request-item${isNew ? ' new-item' : ''}${scClass}" data-number="${req.requestNumber}">`;
     if (cfg.showNumber) h += `<div class="number">#${req.requestNumber}</div>`;
     const songIcon = (cfg.showSongIcon && cfg.icon) ? escapeHtml(cfg.icon) + ' ' : '';
-    h += `<div class="song">${songIcon}${escapeHtml(req.song)}</div>`;
+    const badge = (cfg.showScBadge && req.isSuperChat) ? '<span class="sc-badge">SC</span> ' : '';
+    h += `<div class="song">${badge}${songIcon}${escapeHtml(req.song)}</div>`;
     h += '<div class="meta">';
     if (cfg.showAuthor && req.authorName) h += `<span>@${escapeHtml(req.authorName)}</span>`;
+    if (cfg.showScAmount && req.isSuperChat && req.scAmount) h += `<span class="sc-amount">${escapeHtml(req.scAmount)}</span>`;
     if (cfg.showTimestamp) h += `<span>${escapeHtml(req.timestamp)}</span>`;
     h += '</div></div>';
     return h;

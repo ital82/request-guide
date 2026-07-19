@@ -141,6 +141,10 @@
       <div class="control-group"><label><input type="checkbox" id="showTimestamp" checked> 時刻を表示</label></div>
       <div class="control-group"><label><input type="checkbox" id="showSongIcon"> 曲名の先頭に記号を表示</label></div>
       <div class="control-group"><label>先頭の記号（アイコン）</label><input type="text" id="icon" value="🎵" maxlength="8" placeholder="例: 🎵 / 🎶 / ♪（空欄で無し）"><small>タイトル欄と曲名先頭に使用</small></div>
+      <div class="control-group" style="border-top:1px solid #eee;padding-top:10px;"><small>スーパーチャット由来の表示（既定はすべてオフ）</small></div>
+      <div class="control-group"><label><input type="checkbox" id="showScBadge"> スパチャに「SC」印を付ける</label></div>
+      <div class="control-group"><label><input type="checkbox" id="showScAmount"> スパチャ金額を表示</label></div>
+      <div class="control-group"><label><input type="checkbox" id="scPinTop"> スパチャを上位に固定</label></div>
       <button onclick="copyURL()">📋 URLをコピー</button>
       <div class="url-output" id="urlOutput"></div>
     </div>
@@ -159,7 +163,7 @@
   if (window.__renderPreview) window.__renderPreview();
 </script>
 <script>
-  const DEFAULTS = { containerWidth: 'auto', containerHeight: 'auto', containerPadding: '20', itemGap: '15', itemPadding: '20px 25px', displayLimit: '10', bgcolor: '#028090', titleColor: '#02C39A', textColor: '#FFFFFF', subTextColor: '#FFFFFF', cardBg: '#028090', bgOpacity: '0', titleBgOpacity: '30', cardBgOpacity: '95', titleSize: '32', textSize: '26', subTextSize: '16', animation: 'slideInLeft', animSpeed: '0.5', showTitle: true, showAuthor: true, showNumber: false, showTimestamp: true, showSongIcon: false, icon: '🎵' };
+  const DEFAULTS = { containerWidth: 'auto', containerHeight: 'auto', containerPadding: '20', itemGap: '15', itemPadding: '20px 25px', displayLimit: '10', bgcolor: '#028090', titleColor: '#02C39A', textColor: '#FFFFFF', subTextColor: '#FFFFFF', cardBg: '#028090', bgOpacity: '0', titleBgOpacity: '30', cardBgOpacity: '95', titleSize: '32', textSize: '26', subTextSize: '16', animation: 'slideInLeft', animSpeed: '0.5', showTitle: true, showAuthor: true, showNumber: false, showTimestamp: true, showSongIcon: false, icon: '🎵', showScBadge: false, showScAmount: false, scPinTop: false };
 
   const presets = {
     'compact-2': { containerWidth: '400px', containerHeight: '280px', containerPadding: '15', itemGap: '10', itemPadding: '15px 20px', displayLimit: '2', textSize: '22', subTextSize: '14', titleSize: '28', showTitle: false },
@@ -171,9 +175,9 @@
 
   const MOCK = [
     { requestNumber: 1, song: 'テスト1', authorName: 'viewer_a', timestamp: '19:24' },
-    { requestNumber: 2, song: 'テスト2', authorName: 'viewer_b', timestamp: '19:25' },
+    { requestNumber: 2, song: 'テスト2', authorName: 'viewer_b', timestamp: '19:25', isSuperChat: true, scAmount: '¥500' },
     { requestNumber: 3, song: 'テスト3', authorName: 'viewer_c', timestamp: '19:26' },
-    { requestNumber: 4, song: 'テスト4', authorName: 'viewer_d', timestamp: '19:27' },
+    { requestNumber: 4, song: 'テスト4', authorName: 'viewer_d', timestamp: '19:27', isSuperChat: true, scAmount: '¥1,000' },
     { requestNumber: 5, song: 'テスト5', authorName: 'viewer_e', timestamp: '19:28' }
   ];
 
@@ -193,7 +197,8 @@
       titleSize: $('titleSize').value, textSize: $('textSize').value, subTextSize: $('subTextSize').value,
       animation: $('animation').value, animSpeed: $('animSpeed').value,
       showTitle: $('showTitle').checked, showAuthor: $('showAuthor').checked, showNumber: $('showNumber').checked,
-      showTimestamp: $('showTimestamp').checked, showSongIcon: $('showSongIcon').checked, icon: $('icon').value
+      showTimestamp: $('showTimestamp').checked, showSongIcon: $('showSongIcon').checked, icon: $('icon').value,
+      showScBadge: $('showScBadge').checked, showScAmount: $('showScAmount').checked, scPinTop: $('scPinTop').checked
     };
   }
 
@@ -201,7 +206,7 @@
     const set = (id, v) => { if (v !== undefined && $(id)) $(id).value = v; };
     const chk = (id, v) => { if (v !== undefined && $(id)) $(id).checked = v; };
     ['containerWidth','containerHeight','containerPadding','itemGap','itemPadding','displayLimit','bgcolor','titleColor','textColor','subTextColor','cardBg','bgOpacity','titleBgOpacity','cardBgOpacity','titleSize','textSize','subTextSize','animation','animSpeed','icon'].forEach(k => set(k, c[k]));
-    ['showTitle','showAuthor','showNumber','showTimestamp','showSongIcon'].forEach(k => chk(k, c[k]));
+    ['showTitle','showAuthor','showNumber','showTimestamp','showSongIcon','showScBadge','showScAmount','scPinTop'].forEach(k => chk(k, c[k]));
     syncRangeLabels();
     render();
   }
@@ -255,6 +260,9 @@
     if (!c.showTimestamp) p.set('showTimestamp', 'false');
     if (c.showSongIcon) p.set('showSongIcon', 'true');
     if (c.icon !== '🎵') p.set('icon', c.icon);
+    if (c.showScBadge) p.set('showScBadge', 'true');
+    if (c.showScAmount) p.set('showScAmount', 'true');
+    if (c.scPinTop) p.set('scPinTop', 'true');
     const base = ($('serverUrl').value || '').trim().replace(/[/]+$/, '');
     const room = ($('roomName').value || '').trim();
     const path = room ? '/overlay/' + room : '/overlay';
@@ -273,6 +281,9 @@
     c.showTimestamp = params.get('showTimestamp') !== 'false';
     c.showSongIcon = params.get('showSongIcon') === 'true';
     if (params.has('icon')) c.icon = params.get('icon');
+    c.showScBadge = params.get('showScBadge') === 'true';
+    c.showScAmount = params.get('showScAmount') === 'true';
+    c.scPinTop = params.get('scPinTop') === 'true';
     return c;
   }
 
