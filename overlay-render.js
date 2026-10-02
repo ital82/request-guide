@@ -43,13 +43,23 @@ export function getAnimationCSS(animation, speed) {
   return animations[animation] || animations.slideInLeft;
 }
 
+// フォント指定（CSSのfont-family文字列）を安全に整形する。未指定は既定スタック。
+// CSSブレイクアウト防止のため、英数字・空白・, - _ ' " と和文/全角のみ許可する。
+export function fontFamilyCss(f) {
+  const def = "'Yu Gothic', 'Meiryo', sans-serif";
+  const s = String(f == null ? '' : f)
+    .replace(/[^0-9A-Za-z \-_,'"぀-ヿ一-鿿＀-￯]/g, '')
+    .trim();
+  return s || def;
+}
+
 // オーバーレイの <style> 中身を生成
 export function overlayStyleText(cfg) {
   const bg = Number(cfg.bgOpacity) > 0 ? `rgba(${hexToRgb(cfg.bgcolor)}, ${Number(cfg.bgOpacity) / 100})` : 'transparent';
   const cardHi = Number(cfg.cardBgOpacity) / 100;
   const cardLo = Math.max(0, Number(cfg.cardBgOpacity) - 10) / 100;
   return `
-    body { margin: 0; padding: 0; font-family: 'Yu Gothic', 'Meiryo', sans-serif; background: transparent; color: white; overflow: hidden; display: flex; justify-content: center; align-items: flex-start; }
+    body { margin: 0; padding: 0; font-family: ${fontFamilyCss(cfg.fontFamily)}; background: transparent; color: white; overflow: hidden; display: flex; justify-content: center; align-items: flex-start; }
     .container { width: ${cfg.containerWidth}; height: ${cfg.containerHeight}; max-height: 100vh; padding: ${cfg.containerPadding}px; background: ${bg}; overflow-y: hidden; overflow-x: hidden; box-sizing: border-box; }
     .container::-webkit-scrollbar { width: 8px; }
     .container::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); border-radius: 4px; }

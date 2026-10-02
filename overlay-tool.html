@@ -118,6 +118,23 @@
       <div class="control-group"><label>テキストサイズ (px): <span id="textSizeValue">26</span></label><input type="range" id="textSize" min="12" max="48" value="26"></div>
       <div class="control-group"><label>サブテキストサイズ (px): <span id="subTextSizeValue">16</span></label><input type="range" id="subTextSize" min="10" max="32" value="16"></div>
       <div class="control-group">
+        <label>フォント</label>
+        <select id="fontFamily">
+          <option value="">デフォルト（游ゴシック系）</option>
+          <option value="'Meiryo', sans-serif">メイリオ</option>
+          <option value="'Yu Gothic', sans-serif">游ゴシック</option>
+          <option value="'Yu Mincho', 'MS Mincho', serif">明朝体（游明朝）</option>
+          <option value="'MS Gothic', monospace">ＭＳ ゴシック</option>
+          <option value="'BIZ UDGothic', sans-serif">BIZ UDゴシック</option>
+          <option value="'BIZ UDPMincho', serif">BIZ UD明朝</option>
+          <option value="'HGMaruGothicMPRO', sans-serif">丸ゴシック</option>
+          <option value="'Arial Black', sans-serif">Arial Black（英字・極太）</option>
+          <option value="'Impact', sans-serif">Impact（英字・見出し）</option>
+          <option value="'Comic Sans MS', cursive">Comic Sans（英字・ポップ）</option>
+        </select>
+        <small>※ OBSのPCにインストール済みのフォントのみ反映されます（Windows標準フォント中心）。</small>
+      </div>
+      <div class="control-group">
         <label>アニメーション</label>
         <select id="animation">
           <option value="slideInLeft">スライドイン (左から) ←</option>
@@ -132,7 +149,7 @@
           <option value="typewriter">タイプライター ⌨️</option>
           <option value="none">なし</option>
         </select>
-        <small>※ 動きはOBS上の本番でのみ再生されます（プレビューは静止）</small>
+        <small>※ 変更するとプレビューで動きを再生します（「▶ アニメーション再生」でいつでも再確認できます）</small>
       </div>
       <div class="control-group"><label>アニメーション速度 (秒): <span id="animSpeedValue">0.5</span></label><input type="range" id="animSpeed" min="0.1" max="3" step="0.1" value="0.5"></div>
       <div class="control-group"><label><input type="checkbox" id="showTitle" checked> タイトル欄を表示</label></div>
@@ -151,19 +168,31 @@
   </div>
 
   <div class="right">
-    <div class="preview-head">👁️ プレビュー（本番と同じ描画エンジン・サーバー不要）</div>
+    <div class="preview-head">👁️ プレビュー（本番と同じ描画エンジン）<button onclick="playAnimation()" style="margin-left:8px;font-size:12px;padding:4px 10px;">▶ アニメーション再生</button></div>
     <div id="stage"><iframe id="preview" title="preview" style="width:100%;height:100%;border:0;background:transparent"></iframe></div>
   </div>
 </div>
 
 <!-- 本番と同じ描画エンジンを読み込む（サーバーのオーバーレイと共通） -->
 <script type="module">
-  import * as OverlayRender from './overlay-render.js';
-  window.OverlayRender = OverlayRender;
-  if (window.__renderPreview) window.__renderPreview();
+  // 描画エンジンは「サーバー優先→同梱ローカル」の順で読み込む。
+  // サーバー版(/overlay-render.js は CORS 許可)を使えば、GitHub Pages 側の
+  // overlay-render.js を再アップロードしなくても常に最新機能（フォント等）で動く。
+  async function loadEngine() {
+    const sp = new URLSearchParams(location.search);
+    const server = (sp.get('server') || localStorage.getItem('overlay-tool-server') || '').trim().replace(/\/+$/, '');
+    const urls = [];
+    if (server) urls.push(server + '/overlay-render.js');
+    urls.push('./overlay-render.js');
+    for (const url of urls) {
+      try { window.OverlayRender = await import(url); break; } catch (e) { /* 次の候補へ */ }
+    }
+    if (window.__renderPreview) window.__renderPreview();
+  }
+  loadEngine();
 </script>
 <script>
-  const DEFAULTS = { containerWidth: 'auto', containerHeight: 'auto', containerPadding: '20', itemGap: '15', itemPadding: '20px 25px', displayLimit: '10', bgcolor: '#028090', titleColor: '#02C39A', textColor: '#FFFFFF', subTextColor: '#FFFFFF', cardBg: '#028090', bgOpacity: '0', titleBgOpacity: '30', cardBgOpacity: '95', titleSize: '32', textSize: '26', subTextSize: '16', animation: 'slideInLeft', animSpeed: '0.5', showTitle: true, showAuthor: true, showNumber: false, showTimestamp: true, showSongIcon: false, icon: '🎵', showScBadge: false, showScAmount: false, scPinTop: false };
+  const DEFAULTS = { containerWidth: 'auto', containerHeight: 'auto', containerPadding: '20', itemGap: '15', itemPadding: '20px 25px', displayLimit: '10', bgcolor: '#028090', titleColor: '#02C39A', textColor: '#FFFFFF', subTextColor: '#FFFFFF', cardBg: '#028090', bgOpacity: '0', titleBgOpacity: '30', cardBgOpacity: '95', titleSize: '32', textSize: '26', subTextSize: '16', animation: 'slideInLeft', animSpeed: '0.5', fontFamily: '', showTitle: true, showAuthor: true, showNumber: false, showTimestamp: true, showSongIcon: false, icon: '🎵', showScBadge: false, showScAmount: false, scPinTop: false };
 
   const presets = {
     'compact-2': { containerWidth: '400px', containerHeight: '280px', containerPadding: '15', itemGap: '10', itemPadding: '15px 20px', displayLimit: '2', textSize: '22', subTextSize: '14', titleSize: '28', showTitle: false },
@@ -195,7 +224,7 @@
       subTextColor: $('subTextColor').value, cardBg: $('cardBg').value,
       bgOpacity: $('bgOpacity').value, titleBgOpacity: $('titleBgOpacity').value, cardBgOpacity: $('cardBgOpacity').value,
       titleSize: $('titleSize').value, textSize: $('textSize').value, subTextSize: $('subTextSize').value,
-      animation: $('animation').value, animSpeed: $('animSpeed').value,
+      animation: $('animation').value, animSpeed: $('animSpeed').value, fontFamily: $('fontFamily').value,
       showTitle: $('showTitle').checked, showAuthor: $('showAuthor').checked, showNumber: $('showNumber').checked,
       showTimestamp: $('showTimestamp').checked, showSongIcon: $('showSongIcon').checked, icon: $('icon').value,
       showScBadge: $('showScBadge').checked, showScAmount: $('showScAmount').checked, scPinTop: $('scPinTop').checked
@@ -205,7 +234,7 @@
   function applyConfig(c) {
     const set = (id, v) => { if (v !== undefined && $(id)) $(id).value = v; };
     const chk = (id, v) => { if (v !== undefined && $(id)) $(id).checked = v; };
-    ['containerWidth','containerHeight','containerPadding','itemGap','itemPadding','displayLimit','bgcolor','titleColor','textColor','subTextColor','cardBg','bgOpacity','titleBgOpacity','cardBgOpacity','titleSize','textSize','subTextSize','animation','animSpeed','icon'].forEach(k => set(k, c[k]));
+    ['containerWidth','containerHeight','containerPadding','itemGap','itemPadding','displayLimit','bgcolor','titleColor','textColor','subTextColor','cardBg','bgOpacity','titleBgOpacity','cardBgOpacity','titleSize','textSize','subTextSize','animation','animSpeed','fontFamily','icon'].forEach(k => set(k, c[k]));
     ['showTitle','showAuthor','showNumber','showTimestamp','showSongIcon','showScBadge','showScAmount','scPinTop'].forEach(k => chk(k, c[k]));
     syncRangeLabels();
     render();
@@ -216,20 +245,23 @@
   }
 
   // プレビューは本番と同じ overlay-render.js で iframe 内に描画（CSS衝突なし・完全一致）
-  function render() {
+  // animate=true のときは全項目を「新規」扱いにして出現アニメーションを再生する。
+  function render(animate) {
     $('urlOutput').textContent = generateURL();
     const OR = window.OverlayRender;
     if (!OR) return; // モジュール読込前は後で __renderPreview から再実行される
     const c = getConfig();
-    const shownAll = new Set(MOCK.map(r => r.requestNumber)); // 新規アニメを付けない（静止プレビュー）
+    // 静止プレビューは全件を既出扱い、再生時は空集合＝全件が新規でアニメーションが走る
+    const prev = animate ? new Set() : new Set(MOCK.map(r => r.requestNumber));
     const doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>'
       + OR.overlayStyleText(c)
       + '</style></head><body><div class="container">'
       + OR.titleHTML(c)
-      + '<div class="request-list">' + OR.renderRequests(c, MOCK, shownAll).html + '</div>'
+      + '<div class="request-list">' + OR.renderRequests(c, MOCK, prev).html + '</div>'
       + '</div></body></html>';
     $('preview').srcdoc = doc;
   }
+  function playAnimation() { render(true); }
   window.__renderPreview = render;
 
   function generateURL() {
@@ -254,6 +286,7 @@
     if (c.subTextSize !== '16') p.set('subTextSize', c.subTextSize);
     if (c.animation !== 'slideInLeft') p.set('animation', c.animation);
     if (c.animSpeed !== '0.5') p.set('animSpeed', c.animSpeed);
+    if (c.fontFamily) p.set('font', c.fontFamily);
     if (!c.showTitle) p.set('showTitle', 'false');
     if (!c.showAuthor) p.set('showAuthor', 'false');
     if (c.showNumber) p.set('showNumber', 'true');
@@ -272,7 +305,7 @@
 
   function configFromParams(params) {
     const c = Object.assign({}, DEFAULTS);
-    const map = { width: 'containerWidth', height: 'containerHeight', padding: 'containerPadding', gap: 'itemGap', itemPadding: 'itemPadding', displayLimit: 'displayLimit', bgOpacity: 'bgOpacity', titleBgOpacity: 'titleBgOpacity', cardBgOpacity: 'cardBgOpacity', titleSize: 'titleSize', textSize: 'textSize', subTextSize: 'subTextSize', animation: 'animation', animSpeed: 'animSpeed' };
+    const map = { width: 'containerWidth', height: 'containerHeight', padding: 'containerPadding', gap: 'itemGap', itemPadding: 'itemPadding', displayLimit: 'displayLimit', bgOpacity: 'bgOpacity', titleBgOpacity: 'titleBgOpacity', cardBgOpacity: 'cardBgOpacity', titleSize: 'titleSize', textSize: 'textSize', subTextSize: 'subTextSize', animation: 'animation', animSpeed: 'animSpeed', font: 'fontFamily' };
     for (const k in map) if (params.has(k)) c[map[k]] = params.get(k);
     ['bgcolor','titleColor','textColor','subTextColor','cardBg'].forEach(k => { if (params.has(k)) c[k] = '#' + params.get(k); });
     c.showTitle = params.get('showTitle') !== 'false';
@@ -322,13 +355,15 @@
   }
   function resetToDefault() { if (!confirm('全ての設定をデフォルトに戻しますか?')) return; applyConfig(DEFAULTS); showStatus('デフォルトに戻しました'); }
 
+  // アニメーション関連の操作時は実際に再生して見せる（それ以外は静止プレビュー）
+  const ANIM_IDS = new Set(['animation', 'animSpeed']);
   document.addEventListener('input', (e) => {
     syncRangeLabels();
-    render();
+    render(ANIM_IDS.has(e.target.id));
     if (e.target.id === 'serverUrl') localStorage.setItem('overlay-tool-server', e.target.value);
     if (e.target.id === 'roomName') localStorage.setItem('overlay-tool-room', e.target.value);
   });
-  document.addEventListener('change', render);
+  document.addEventListener('change', (e) => render(ANIM_IDS.has(e.target.id)));
 
   window.addEventListener('DOMContentLoaded', () => {
     $('serverUrl').value = localStorage.getItem('overlay-tool-server') || '';
